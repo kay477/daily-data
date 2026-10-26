@@ -1,0 +1,52 @@
+name: Aktualizacja mapy
+
+on:
+  schedule:
+    - cron: "7 * * * *"   # co godzinę, 7 min po pełnej (GDELT publikuje co 15 min)
+  workflow_dispatch:
+    inputs:
+      backfill_days:
+        description: "Ile dni historii pobrać, jeśli stanu jeszcze nie ma"
+        default: "30"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: news-map
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pobierz poprzedni stan z gh-pages
+        run: |
+          git clone --depth 1 --branch gh-pages \
+            "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" site \
+            || mkdir -p site
+          rm -rf site/.git
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Generuj mapę
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python -m newsmap --state site/state --out site --backfill-days "${{ inputs.backfill_days || '30' }}" --scheme "${{ vars.NEWSMAP_SCHEME || 'neon' }}"
+
+      - name: Opublikuj na GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          publish_branch: gh-pages
+          force_orphan: true      # bez historii – gałąź się nie rozrasta
+          enable_jekyll: false

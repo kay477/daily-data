@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+site/
+test/
+firmware/news_map_display/config.h
+.DS_Store

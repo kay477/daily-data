@@ -27,12 +27,12 @@ GDELT (co 15 min)  ->  GitHub Actions (co godzinę)  ->  GitHub Pages  ->  reTer
    ```
    git init && git add . && git commit -m "news map"
    git branch -M main
-   git remote add origin https://github.com/TWOJ-LOGIN/news-map.git
+   git remote add origin https://github.com/kay477/daily-data.git
    git push -u origin main
    ```
 3. **Actions** → „Aktualizacja mapy” → **Run workflow**. Pierwsze uruchomienie pobiera 30 dni historii (ok. 2900 plików) i trwa ok. 15–30 min. Kolejne trwają około minuty.
 4. **Settings → Pages** → Source: *Deploy from a branch* → branch `gh-pages`, folder `/ (root)` → Save.
-5. Po chwili podgląd jest pod adresem `https://TWOJ-LOGIN.github.io/news-map/preview.png`.
+5. Po chwili podgląd jest pod adresem `https://kay477.github.io/daily-data/preview.png`.
 
 Od tej pory mapa aktualizuje się sama co godzinę (o :07, choć GitHub potrafi spóźnić się o kilkanaście minut).
 
@@ -51,7 +51,7 @@ To jedno małe zapytanie na godzinę. API jest płatne, ale przy takiej skali ko
 2. Otwórz `firmware/news_map_display/news_map_display.ino`.
 3. Skopiuj `config.example.h` jako `config.h` i wpisz:
    - Wi-Fi (tylko **2,4 GHz**)
-   - `IMAGE_URL` = `https://TWOJ-LOGIN.github.io/news-map/news.bin`
+   - `IMAGE_URL` = `https://kay477.github.io/daily-data/news.bin`
 4. Tools:
    - Board: **XIAO_ESP32S3**
    - PSRAM: **OPI PSRAM** (bez tego nie zadziała)
