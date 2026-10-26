@@ -42,6 +42,9 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python -m newsmap --state site/state --out site --backfill-days "${{ inputs.backfill_days || '30' }}" --scheme "${{ vars.NEWSMAP_SCHEME || 'neon' }}"
 
+      - name: Dołącz prasówki
+        run: if [ -d prasowka ]; then cp -r prasowka site/; fi
+
       - name: Opublikuj na GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
