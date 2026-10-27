@@ -33,7 +33,11 @@ _BASE = dict(
     l1=YELLOW, l2=RED, glitch1=WHITE, glitch2=YELLOW,  # poziomy alarmu + kolor "glitchowego" konturu
     header_bg=BLACK, header_fg=WHITE, footer_bg=BLACK, footer_fg=WHITE, status=GREEN,
     frame="hud", stripes=False,
+    land="dots", grid_inner=True,             # land: "dots" (matryca) albo "outline" (sam kontur lądów)
 )
+_LIGHT = dict(_BASE, bg=WHITE, fg=BLACK, dim=BLUE, land_dot=BLACK, dot=1, step=3, grid=BLUE, grid_every=5,
+              accent=RED, title2=BLACK, line=BLACK, l1=BLUE, l2=RED, glitch1=BLACK, glitch2=BLACK,
+              header_bg=WHITE, header_fg=BLACK, footer_bg=WHITE, footer_fg=BLACK, status=BLUE)
 SCHEMES = {
     # klasyczny HUD: niebieskie kropki na czerni
     "neon": dict(_BASE),
@@ -51,9 +55,11 @@ SCHEMES = {
                       accent=RED, title2=YELLOW, line=RED, l1=WHITE, l2=RED, glitch1=RED, glitch2=BLUE,
                       header_fg=YELLOW, footer_fg=YELLOW, status=RED, frame="cut", stripes=True),
     # jasny: białe tło jak kartka, drobne czarne kropki – najjaśniejszy wygląd na e-papierze
-    "jasny": dict(_BASE, bg=WHITE, fg=BLACK, dim=BLUE, land_dot=BLACK, dot=1, step=3, grid=BLUE, grid_every=5,
-                  accent=RED, title2=BLACK, line=BLACK, l1=BLUE, l2=RED, glitch1=BLACK, glitch2=BLACK,
-                  header_bg=WHITE, header_fg=BLACK, footer_bg=WHITE, footer_fg=BLACK, status=BLUE),
+    "jasny": dict(_LIGHT),
+    # jeszcze jaśniej: rzadsze kropki, bez wewnętrznej siatki
+    "jasny2": dict(_LIGHT, step=4, grid_inner=False),
+    # najjaśniej: sam kontur lądów, prawie cały ekran biały
+    "kontur": dict(_LIGHT, land="outline", land_dot=BLUE, grid_inner=False),
 }
 DEFAULT_SCHEME = "neon"
 
@@ -229,9 +235,11 @@ def render(levels: dict[str, int], stories: list[dict], when: datetime, out_dir:
     # ---------------- siatka współrzędnych ----------------
     ge = sc["grid_every"]
     for lon in range(-180, 181, 30):
+        if abs(lon) < 180 and not sc["grid_inner"]:
+            continue
         pts = [proj(lon, lat) for lat in range(int(proj.lat_min), int(proj.lat_max) + 1, 2)]
         dotted_line(d, pts, sc["grid"], every=ge if abs(lon) < 180 else 2)
-    for lat in range(-30, 81, 30):
+    for lat in range(-30, 81, 30) if sc["grid_inner"] else ():
         pts = [proj(lon, lat) for lon in range(-180, 181, 3)]
         dotted_line(d, pts, sc["grid"], every=ge)
 
@@ -245,10 +253,16 @@ def render(levels: dict[str, int], stories: list[dict], when: datetime, out_dir:
             md.polygon(pts, fill=1)
     mpx = mask.load()
     step, dot = sc["step"], sc["dot"]
-    for y in range(map_top, map_bot, step):
-        for x in range(0, W, step):
-            if mpx[x, y]:
-                d.rectangle((x, y, x + dot - 1, y + dot - 1), fill=sc["land_dot"])
+    if sc["land"] == "outline":  # tylko linia brzegowa: piksel lądu, który ma sąsiada-morze
+        for y in range(map_top + 1, map_bot - 1):
+            for x in range(1, W - 1):
+                if mpx[x, y] and not (mpx[x - 1, y] and mpx[x + 1, y] and mpx[x, y - 1] and mpx[x, y + 1]):
+                    d.point((x, y), fill=sc["land_dot"])
+    else:
+        for y in range(map_top, map_bot, step):
+            for x in range(0, W, step):
+                if mpx[x, y]:
+                    d.rectangle((x, y, x + dot - 1, y + dot - 1), fill=sc["land_dot"])
 
     # ---------------- zapalone regiony ----------------
     has_sub = {k.split("-")[0] for k, v in levels.items() if "-" in k and v > 0}
