@@ -57,6 +57,12 @@ def _yahoo(symbol: str) -> tuple[float, float] | None:
     for ts, c in zip(stamps, closes):
         if c is not None and day(ts) < last_day:
             prev = c
+    if prev is None:
+        # część indeksów (np. WIG20) ma w danych dziennych dziury – wtedy pytamy o sam bieżący dzień,
+        # dla którego chartPreviousClose to zamknięcie poprzedniej sesji
+        r1 = _get(f"https://query2.finance.yahoo.com/v8/finance/chart/{symbol}", {"range": "1d", "interval": "1d"})
+        r1.raise_for_status()
+        prev = r1.json()["chart"]["result"][0]["meta"].get("chartPreviousClose")
     return (float(price), float(prev)) if prev else None
 
 
