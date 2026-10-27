@@ -67,6 +67,7 @@ def main(argv=None) -> None:
         "stories": stories,
         "titles": titles,
         "markets": quotes,
+        "markets_errors": markets.ERRORS,
         "scores": [s.__dict__ for s in scores[:30]],
     }
     (a.out / "news.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")

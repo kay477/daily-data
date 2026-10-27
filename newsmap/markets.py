@@ -62,7 +62,11 @@ def _stooq(symbol: str) -> tuple[float, float] | None:
     return float(rows[-1]["Close"]), float(rows[-2]["Close"])
 
 
+ERRORS: list[str] = []  # ostatnie błędy źródeł – trafiają do news.json, żeby dało się je podejrzeć
+
+
 def fetch(state_dir: Path | None = None) -> list[dict]:
+    ERRORS.clear()
     cache_path = state_dir / "markets.json" if state_dir else None
     cache = {}
     if cache_path and cache_path.exists():
@@ -78,8 +82,11 @@ def fetch(state_dir: Path | None = None) -> list[dict]:
         for name, fn, sym in (("yahoo", _yahoo, ysym), ("stooq", _stooq, ssym)):
             try:
                 got = fn(sym)
+                if not got:
+                    ERRORS.append(f"{label}/{name}: brak danych w odpowiedzi")
             except Exception as e:  # noqa: BLE001 – każda awaria źródła = próbujemy następne
                 log.warning("Kurs %s z %s nie przyszedł: %s", label, name, e)
+                ERRORS.append(f"{label}/{name}: {type(e).__name__}: {str(e)[:200]}")
                 got = None
             if got:
                 src = name
