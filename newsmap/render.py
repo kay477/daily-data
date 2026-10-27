@@ -50,6 +50,10 @@ SCHEMES = {
     "nightcity": dict(_BASE, fg=YELLOW, dim=RED, land_dot=YELLOW, dot=1, step=3, grid=RED, grid_every=5,
                       accent=RED, title2=YELLOW, line=RED, l1=WHITE, l2=RED, glitch1=RED, glitch2=BLUE,
                       header_fg=YELLOW, footer_fg=YELLOW, status=RED, frame="cut", stripes=True),
+    # jasny: białe tło jak kartka, drobne czarne kropki – najjaśniejszy wygląd na e-papierze
+    "jasny": dict(_BASE, bg=WHITE, fg=BLACK, dim=BLUE, land_dot=BLACK, dot=1, step=3, grid=BLUE, grid_every=5,
+                  accent=RED, title2=BLACK, line=BLACK, l1=BLUE, l2=RED, glitch1=BLACK, glitch2=BLACK,
+                  header_bg=WHITE, header_fg=BLACK, footer_bg=WHITE, footer_fg=BLACK, status=BLUE),
 }
 DEFAULT_SCHEME = "neon"
 
