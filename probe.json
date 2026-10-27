@@ -1,0 +1,129 @@
+{
+ "yahoo_cffi ^IXIC": {
+  "regularMarketPrice": 26169.38,
+  "chartPreviousClose": 26430.89,
+  "previousClose": null,
+  "regularMarketTime": 1793049359
+ },
+ "yahoo_cffi ^GSPC": {
+  "regularMarketPrice": 7676.77,
+  "chartPreviousClose": 7690.73,
+  "previousClose": null,
+  "regularMarketTime": 1793047423
+ },
+ "yahoo_cffi WIG20.WA": {
+  "regularMarketPrice": 4213.37,
+  "chartPreviousClose": 4198.02,
+  "previousClose": null,
+  "regularMarketTime": 1793103330
+ },
+ "yahoo_cffi CDR.WA": {
+  "regularMarketPrice": 270.0,
+  "chartPreviousClose": 268.4,
+  "previousClose": null,
+  "regularMarketTime": 1793103287
+ },
+ "cnbc": [
+  {
+   "symbol": ".IXIC",
+   "name": "NASDAQ Composite",
+   "last": "26,169.381",
+   "change_pct": "+0.82%",
+   "previous_day_closing": "26,169.381",
+   "last_time": "2026-10-26",
+   "code": 0
+  },
+  {
+   "symbol": ".SPX",
+   "name": "S&P 500 Index",
+   "last": "7,676.77",
+   "change_pct": "+0.70%",
+   "previous_day_closing": "7,676.77",
+   "last_time": "2026-10-26",
+   "code": 0
+  },
+  {
+   "symbol": ".WIG20",
+   "name": null,
+   "last": null,
+   "change_pct": null,
+   "previous_day_closing": null,
+   "last_time": null,
+   "code": 3
+  },
+  {
+   "symbol": "CDR-PL",
+   "name": null,
+   "last": null,
+   "change_pct": null,
+   "previous_day_closing": null,
+   "last_time": null,
+   "code": 3
+  },
+  {
+   "symbol": "CDR-WA",
+   "name": null,
+   "last": null,
+   "change_pct": null,
+   "previous_day_closing": null,
+   "last_time": null,
+   "code": 3
+  },
+  {
+   "symbol": "CDR.WA",
+   "name": null,
+   "last": null,
+   "change_pct": null,
+   "previous_day_closing": null,
+   "last_time": null,
+   "code": 3
+  },
+  {
+   "symbol": "CDR",
+   "name": null,
+   "last": null,
+   "change_pct": null,
+   "previous_day_closing": null,
+   "last_time": null,
+   "code": 1
+  }
+ ],
+ "google .IXIC:INDEXNASDAQ": {
+  "last": null,
+  "prev": null,
+  "len": 1243423
+ },
+ "google .INX:INDEXSP": {
+  "last": null,
+  "prev": null,
+  "len": 1234043
+ },
+ "google WIG20:WSE": {
+  "last": null,
+  "prev": null,
+  "len": 1207533
+ },
+ "google CDR:WSE": {
+  "last": null,
+  "prev": null,
+  "len": 1349694
+ },
+ "google CDR:WPW": {
+  "last": null,
+  "prev": null,
+  "len": 1128885
+ },
+ "stooq d/l": "HTTP 200: '<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"robots\" content=\"noindex,nofollow\"></head><body><noscript>This site requires JavaScript to verify your browser. Please enable JavaScript an'",
+ "stooq q/l": "HTTP 404: '<meta charset=utf-8><title>Stooq</title><center style=font-family:arial;margin-top:50px><p><a href=/><img src=//static.stooq.com/stooq.svg height=68></a><p style=font-size:x-large>The page you request'",
+ "stooq.pl q/l": "HTTP 404: '<meta charset=utf-8><title>Stooq</title><center style=font-family:arial;margin-top:50px><p><a href=/><img src=//static.stooq.pl/stooq.svg height=68></a><p style=font-size:x-large>Wybrana lokalizacja n'",
+ "bankier WIG20": {
+  "last": [],
+  "change": [],
+  "len": 1433766
+ },
+ "bankier CDPROJEKT": {
+  "last": [],
+  "change": [],
+  "len": 2271558
+ }
+}
