@@ -1,6 +1,6 @@
 # News Map
 
-Mapa świata na ekranie e-paper (Seeed reTerminal E1002), która rano pokazuje, gdzie dzieje się coś nietypowego. Styl jest cyberpunkowy: czarne tło, ląd jako matryca kropek i siatka współrzędnych. Kraje, o których media nagle piszą dużo więcej niż zwykle, świecą na żółto albo czerwono. W USA podświetla się konkretny stan, a nie cały kraj. Pod mapą są maksymalnie cztery jednozdaniowe wyjaśnienia.
+Mapa świata na ekranie e-paper (Seeed reTerminal E1002), która rano pokazuje, gdzie dzieje się coś nietypowego. Styl jest cyberpunkowy: czarne tło, ląd jako matryca kropek i siatka współrzędnych. Kraje, o których media nagle piszą dużo więcej niż zwykle, świecą na żółto albo czerwono. W USA podświetla się konkretny stan, a nie cały kraj. Pod mapą są maksymalnie cztery jednozdaniowe wyjaśnienia, a na samym dole pasek giełdowy: NASDAQ, S&P 500, WIG20 i CD Projekt ze zmianą od poprzedniego zamknięcia.
 
 ## Jak to działa
 
@@ -82,6 +82,7 @@ Wynik: `preview.png`, `news.bin` i `news.json` (wyniki wszystkich krajów, przyd
   - `mono`: białe drobne kropki, najbezpieczniejszy kontrast
 - Kraje dzielone na regiony: `SUBDIVIDED` w `newsmap/gdelt.py` (na razie tylko USA, bo tylko dla stanów są dołączone kształty)
 - Liczba nagłówków: `--stories 3`
+- Pasek giełdowy: lista `TICKERS` w `newsmap/markets.py` (symbol Yahoo + symbol Stooq jako zapas). `--no-markets` przywraca starą legendę. Kursy pobierają się co godzinę, więc w godzinach sesji ekran odświeża się praktycznie co godzinę.
 - Krótsze nazwy krajów na liście: `SHORT_NAMES` w `newsmap/render.py`
 
 ## Ograniczenia, o których warto wiedzieć
@@ -97,6 +98,7 @@ Wynik: `preview.png`, `news.bin` i `news.json` (wyniki wszystkich krajów, przyd
 newsmap/gdelt.py      pobieranie GDELT, stan godzinowy (31 dni)
 newsmap/score.py      wykrywanie anomalii
 newsmap/headlines.py  tytuły artykułów + streszczenie po polsku
+newsmap/markets.py    kursy do paska giełdowego (Yahoo, zapasowo Stooq)
 newsmap/render.py     obrazek 800x480, 6 kolorów, news.bin
 data/countries.json   kształty krajów (Natural Earth 1:50m przez world-atlas), stanów USA (us-atlas) + mapowanie FIPS->ISO
 firmware/             szkic Arduino dla reTerminal E1002

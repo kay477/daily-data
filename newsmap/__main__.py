@@ -11,7 +11,7 @@ from datetime import timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from . import gdelt, headlines, render, score
+from . import gdelt, headlines, markets, render, score
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -25,6 +25,7 @@ def main(argv=None) -> None:
     p.add_argument("--tz", default="Europe/Warsaw")
     p.add_argument("--stories", type=int, default=4)
     p.add_argument("--fake", action="store_true", help="test na sztucznych danych (bez internetu)")
+    p.add_argument("--no-markets", action="store_true", help="bez paska giełdowego (stara legenda)")
     p.add_argument("-v", "--verbose", action="store_true")
     a = p.parse_args(argv)
     logging.basicConfig(level=logging.DEBUG if a.verbose else logging.INFO, format="%(levelname)s %(message)s")
@@ -57,13 +58,15 @@ def main(argv=None) -> None:
     stories = [{"iso": s.iso, "name": names[s.iso], "text": text.get(s.iso) or "brak nagłówków"} for s in top]
     levels = {s.iso: s.level for s in scores if s.level}
     when = when_utc.astimezone(ZoneInfo(a.tz))
-    render.render(levels, stories, when, a.out, baseline_days, a.scheme)
+    quotes = markets.fake() if a.fake else ([] if a.no_markets else markets.fetch(a.state))
+    render.render(levels, stories, when, a.out, baseline_days, a.scheme, quotes)
 
     meta = {
         "generated_utc": when_utc.astimezone(timezone.utc).isoformat(),
         "baseline_days": baseline_days,
         "stories": stories,
         "titles": titles,
+        "markets": quotes,
         "scores": [s.__dict__ for s in scores[:30]],
     }
     (a.out / "news.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")

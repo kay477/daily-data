@@ -176,8 +176,9 @@ def stripes(d, box, color, gap=6, width=3):
 
 
 def render(levels: dict[str, int], stories: list[dict], when: datetime, out_dir: Path,
-           baseline_days: int, scheme: str = DEFAULT_SCHEME) -> Image.Image:
-    """levels: klucz (ISO kraju albo "US-CA") -> 0/1/2; stories: [{iso, name, text}]."""
+           baseline_days: int, scheme: str = DEFAULT_SCHEME, markets: list[dict] | None = None) -> Image.Image:
+    """levels: klucz (ISO kraju albo "US-CA") -> 0/1/2; stories: [{iso, name, text}];
+    markets: [{label, price, change_pct}] do paska na dole (puste = legenda)."""
     data = json.loads((ROOT / "data" / "countries.json").read_text(encoding="utf-8"))
     sc = SCHEMES[scheme]
     img = Image.new("P", (W, H), sc["bg"])
@@ -215,7 +216,7 @@ def render(levels: dict[str, int], stories: list[dict], when: datetime, out_dir:
 
     # ---------------- układ ----------------
     rows = min(max(len(stories), 1), 4)
-    footer_h = 18
+    footer_h = 22
     list_h = 8 + 24 * rows + footer_h
     map_top = header_h + 8
     map_bot = H - list_h - 6
@@ -300,25 +301,57 @@ def render(levels: dict[str, int], stories: list[dict], when: datetime, out_dir:
         tx = nx + 6 + d.textlength("// ", font=fname)
         d.text((tx, cy), fit(d, s["text"], ftxt, W - tx - 12), font=ftxt, fill=sc["fg"], anchor="lm")
 
-    # ---------------- stopka: legenda + status ----------------
+    # ---------------- stopka: pasek giełdowy (albo legenda, gdy brak kursów) ----------------
     fy = H - footer_h + 2
     d.rectangle((0, fy - 3, W, H), fill=sc["footer_bg"])
     if sc["footer_bg"] == sc["bg"]:
         d.line((0, fy - 3, W, fy - 3), fill=sc["grid"])
-    fl = font(11, True, "mono")
-    x = 12
-    for label, colr in (("KRYTYCZNE", sc["l2"]), ("PODWYŻSZONE", sc["l1"])):
-        d.rectangle((x, fy + 2, x + 8, fy + 10), fill=colr, outline=sc["footer_fg"] if colr == sc["footer_bg"] else None)
-        d.text((x + 13, fy), label, font=fl, fill=sc["footer_fg"])
-        x += 13 + d.textlength(label, font=fl) + 16
-    status = f"HIST {baseline_days:02d}/30D" + ("  ·  KALIBRACJA" if baseline_days < 14 else "") + "  ·  ŹRÓDŁO GDELT"
-    d.text((W - 12 - d.textlength(status, font=fl), fy), status, font=fl,
-           fill=RED if baseline_days < 14 else sc["status"])
+    if markets:
+        ticker(d, markets, fy - 3, sc)
+    else:
+        fl = font(11, True, "mono")
+        x = 12
+        for label, colr in (("KRYTYCZNE", sc["l2"]), ("PODWYŻSZONE", sc["l1"])):
+            d.rectangle((x, fy + 4, x + 8, fy + 12), fill=colr, outline=sc["footer_fg"] if colr == sc["footer_bg"] else None)
+            d.text((x + 13, fy + 2), label, font=fl, fill=sc["footer_fg"])
+            x += 13 + d.textlength(label, font=fl) + 16
+        status = f"HIST {baseline_days:02d}/30D" + ("  ·  KALIBRACJA" if baseline_days < 14 else "") + "  ·  ŹRÓDŁO GDELT"
+        d.text((W - 12 - d.textlength(status, font=fl), fy + 2), status, font=fl,
+               fill=RED if baseline_days < 14 else sc["status"])
 
     out_dir.mkdir(parents=True, exist_ok=True)
     img.convert("RGB").save(out_dir / "preview.png")
     write_bin(img, out_dir / "news.bin")
     return img
+
+
+def fmt_num(x: float, decimals: int) -> str:
+    """Polski zapis: spacja jako separator tysięcy, przecinek dziesiętny."""
+    return f"{x:,.{decimals}f}".replace(",", " ").replace(".", ",")
+
+
+def ticker(d: ImageDraw.ImageDraw, markets: list[dict], top: int, sc: dict) -> None:
+    """Pasek giełdowy: NAZWA kurs ▲zmiana% – pozycje rozłożone równo na całej szerokości."""
+    fl, fv = font(14, True, "mono"), font(14, False, "mono")
+    cy = top + (H - top) / 2 + 1
+    items = []
+    for m in markets:
+        ch = m["change_pct"]
+        arrow, col = ("▲", GREEN) if ch > 0.004 else ("▼", RED) if ch < -0.004 else ("■", sc["footer_fg"])
+        price = fmt_num(m["price"], 0 if m["price"] >= 1000 else 2)
+        parts = [(m["label"], fl, sc["footer_fg"]), (" " + price + " ", fv, sc["footer_fg"]),
+                 (arrow + fmt_num(abs(ch), 2) + "%", fl, col)]
+        items.append((parts, sum(d.textlength(t, font=f) for t, f, _ in parts)))
+    gap = (W - 24 - sum(w for _, w in items)) / max(len(items) - 1, 1)
+    x = 12.0
+    for i, (parts, w) in enumerate(items):
+        if i:  # separator w połowie odstępu
+            sx = x - gap / 2
+            d.line((sx, top + 6, sx, H - 5), fill=sc["dim"] if sc["dim"] != sc["footer_bg"] else sc["footer_fg"])
+        for t, f, col in parts:
+            d.text((x, cy), t, font=f, fill=col, anchor="lm")
+            x += d.textlength(t, font=f)
+        x += gap
 
 
 def write_bin(img: Image.Image, path: Path) -> None:
