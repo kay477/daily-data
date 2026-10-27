@@ -1,14 +1,14 @@
 """Kursy do paska giełdowego: zmiana względem poprzedniego zamknięcia.
 
-Źródła po kolei: Yahoo Finance (nieoficjalne API wykresów), potem Stooq.
+Źródła po kolei: Yahoo Finance (nieoficjalne API wykresów, przez curl_cffi, bo zwykłe
+zapytania z serwerów GitHuba dostają 429), dla indeksów USA zapasowo CNBC.
+Stooq od 2026 wymaga JavaScriptu, więc odpadł.
 Jeśli oba zawiodą, bierzemy ostatnie znane wartości z pliku stanu,
 żeby pasek nie znikał przy chwilowej awarii. Bez żadnych danych zwracamy [],
 a render pokazuje wtedy starą legendę.
 """
 from __future__ import annotations
 
-import csv
-import io
 import json
 import logging
 from datetime import datetime, timezone
@@ -18,48 +18,61 @@ import requests
 
 log = logging.getLogger("newsmap.markets")
 
-# (etykieta na ekranie, symbol Yahoo, symbol Stooq)
+# (etykieta na ekranie, symbol Yahoo, symbol CNBC albo None)
 TICKERS = [
-    ("NASDAQ", "^IXIC", "^ndq"),
-    ("S&P500", "^GSPC", "^spx"),
-    ("WIG20", "WIG20.WA", "wig20"),
-    ("CDPR", "CDR.WA", "cdr"),
+    ("NASDAQ", "^IXIC", ".IXIC"),
+    ("S&P500", "^GSPC", ".SPX"),
+    ("WIG20", "WIG20.WA", None),
+    ("CDPR", "CDR.WA", None),
 ]
 UA = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"}
 TIMEOUT = 15
 MAX_CACHE_AGE_H = 72  # starsze dane z pamięci podręcznej nie są już pokazywane
 
 
+def _get(url: str, params: dict):
+    """curl_cffi udaje przeglądarkę (Yahoo blokuje zwykłe biblioteki); bez niego – requests."""
+    try:
+        from curl_cffi import requests as cr  # noqa: PLC0415
+        return cr.get(url, params=params, impersonate="chrome", timeout=TIMEOUT)
+    except ImportError:
+        return requests.get(url, params=params, headers=UA, timeout=TIMEOUT)
+
+
 def _yahoo(symbol: str) -> tuple[float, float] | None:
-    r = requests.get(f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}",
-                     params={"range": "5d", "interval": "1d"}, headers=UA, timeout=TIMEOUT)
+    r = _get(f"https://query2.finance.yahoo.com/v8/finance/chart/{symbol}", {"range": "5d", "interval": "1d"})
     r.raise_for_status()
     res = r.json()["chart"]["result"][0]
     meta = res["meta"]
     price = meta.get("regularMarketPrice")
-    closes = [c for c in (res.get("indicators", {}).get("quote", [{}])[0].get("close") or [])]
+    closes = res.get("indicators", {}).get("quote", [{}])[0].get("close") or []
     stamps = res.get("timestamp") or []
     if price is None or not stamps:
         return None
-    # poprzednie zamknięcie = ostatni pełny dzień przed dniem bieżącego notowania
+    # poprzednie zamknięcie = ostatnia sesja przed dniem bieżącego notowania
     tz_off = meta.get("gmtoffset", 0)
-    last_day = datetime.fromtimestamp(meta.get("regularMarketTime", stamps[-1]) + tz_off, timezone.utc).date()
+    day = lambda ts: datetime.fromtimestamp(ts + tz_off, timezone.utc).date()  # noqa: E731
+    last_day = day(meta.get("regularMarketTime", stamps[-1]))
     prev = None
     for ts, c in zip(stamps, closes):
-        if c is not None and datetime.fromtimestamp(ts + tz_off, timezone.utc).date() < last_day:
+        if c is not None and day(ts) < last_day:
             prev = c
-    if prev is None:
-        prev = meta.get("chartPreviousClose")
     return (float(price), float(prev)) if prev else None
 
 
-def _stooq(symbol: str) -> tuple[float, float] | None:
-    r = requests.get("https://stooq.com/q/d/l/", params={"s": symbol, "i": "d"}, headers=UA, timeout=TIMEOUT)
-    r.raise_for_status()
-    rows = [row for row in csv.DictReader(io.StringIO(r.text)) if row.get("Close")]
-    if len(rows) < 2:
+def _cnbc(symbol: str | None) -> tuple[float, float] | None:
+    if not symbol:
         return None
-    return float(rows[-1]["Close"]), float(rows[-2]["Close"])
+    r = requests.get("https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol",
+                     params={"symbols": symbol, "requestMethod": "itv", "noform": "1", "partnerId": "2",
+                             "fund": "1", "exthrs": "1", "output": "json"}, headers=UA, timeout=TIMEOUT)
+    r.raise_for_status()
+    q = r.json()["FormattedQuoteResult"]["FormattedQuote"][0]
+    if not q.get("last") or not q.get("change_pct"):
+        return None
+    price = float(q["last"].replace(",", ""))
+    pct = float(q["change_pct"].replace("%", "").replace("+", ""))
+    return price, price / (1 + pct / 100)
 
 
 ERRORS: list[str] = []  # ostatnie błędy źródeł – trafiają do news.json, żeby dało się je podejrzeć
@@ -77,12 +90,12 @@ def fetch(state_dir: Path | None = None) -> list[dict]:
 
     now = datetime.now(timezone.utc)
     out = []
-    for label, ysym, ssym in TICKERS:
+    for label, ysym, csym in TICKERS:
         got, src = None, None
-        for name, fn, sym in (("yahoo", _yahoo, ysym), ("stooq", _stooq, ssym)):
+        for name, fn, sym in (("yahoo", _yahoo, ysym), ("cnbc", _cnbc, csym)):
             try:
                 got = fn(sym)
-                if not got:
+                if not got and sym:
                     ERRORS.append(f"{label}/{name}: brak danych w odpowiedzi")
             except Exception as e:  # noqa: BLE001 – każda awaria źródła = próbujemy następne
                 log.warning("Kurs %s z %s nie przyszedł: %s", label, name, e)
@@ -118,6 +131,6 @@ def fake() -> list[dict]:
     return [
         {"label": "NASDAQ", "price": 26169.38, "change_pct": 0.82},
         {"label": "S&P500", "price": 7676.80, "change_pct": 0.70},
-        {"label": "WIG20", "price": 2734.15, "change_pct": -0.41},
-        {"label": "CDPR", "price": 312.60, "change_pct": -2.35},
+        {"label": "WIG20", "price": 4213.37, "change_pct": -0.41},
+        {"label": "CDPR", "price": 270.00, "change_pct": -2.35},
     ]
