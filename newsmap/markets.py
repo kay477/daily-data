@@ -176,11 +176,16 @@ def history(state_dir: Path | None = None, days: int = 30) -> dict[str, list[dic
                     rows.pop()
                 rows.append({"d": day, "o": o, "h": h, "l": lo, "c": c})
             log.info("Historia %s: %d sesji", label, len(rows))
+            if len(rows) < 2:
+                cache.setdefault("_diag", {})[label] = {"rows": len(rows), "meta": {k: res["meta"].get(k) for k in (
+                    "dataGranularity", "range", "validRanges", "regularMarketPrice")},
+                    "n_ts": len(res.get("timestamp") or []), "closes": (q.get("close") or [])[:8]}
             if len(rows) >= 2:
                 out[label] = rows[-days:]
                 cache[label] = out[label]
         except Exception as e:  # noqa: BLE001
             log.warning("Historia %s nie przyszła: %s", label, e)
+            cache.setdefault("_diag", {})[label] = f"{type(e).__name__}: {str(e)[:300]}"
         if label not in out and label in cache:
             out[label] = cache[label]
     if cache_path:
