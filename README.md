@@ -106,3 +106,15 @@ tools/                przebudowa countries.json, sztuczne dane testowe
 ```
 
 Kształty krajów: Natural Earth (domena publiczna), pakiety world-atlas i us-atlas (licencja ISC, `data/*_LICENSE`). Czcionki: DejaVu (licencja wolna).
+
+## Trzy ekrany (przyciski na obudowie)
+
+| Przycisk (od przodu) | Ekran | Plik na GitHub Pages |
+|---|---|---|
+| lewy | MAPA – kraje z anomalią newsów | `news.bin` |
+| środkowy | RYNKI – świece dzienne z ostatniego miesiąca: NASDAQ, S&P 500, WIG20, CD Projekt | `rynki.bin` |
+| prawy (zielony) | BRIEFING – pogoda w Gdańsku (Open-Meteo), tematy dzisiejszej prasówki, pasek giełdowy | `briefing.bin` |
+
+Naciśnięcie przycisku ekranu, który już jest na wyświetlaczu, wymusza jego odświeżenie. Dioda świeci, gdy urządzenie pobiera i rysuje. Co godzinę odświeża się ekran, który akurat jest wybrany, a pierwsza aktualizacja po nocy przełącza na `MORNING_SCREEN` z `config.h` (domyślnie briefing; `-1` wyłącza).
+
+Wszystkie trzy obrazki generuje ten sam workflow co godzinę (`newsmap/screens.py`, pogoda w `newsmap/weather.py`). Podglądy: `rynki.png`, `briefing.png`. Styl (`NEWSMAP_SCHEME`) dotyczy wszystkich ekranów.

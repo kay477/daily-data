@@ -17,3 +17,6 @@
 // Cisza nocna: między tymi godzinami ekran się nie odświeża
 #define NIGHT_START 23
 #define NIGHT_END   6
+
+// Który ekran pokazać przy pierwszej aktualizacji po nocy: 0 = mapa, 1 = rynki, 2 = briefing, -1 = bez zmiany
+#define MORNING_SCREEN 2

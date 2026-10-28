@@ -140,3 +140,63 @@ def fake() -> list[dict]:
         {"label": "WIG20", "price": 4213.37, "change_pct": -0.41},
         {"label": "CDPR", "price": 270.00, "change_pct": -2.35},
     ]
+
+
+def history(state_dir: Path | None = None, days: int = 30) -> dict[str, list[dict]]:
+    """Świece dzienne z ostatniego miesiąca dla ekranu RYNKI: {etykieta: [{d, o, h, l, c}]}.
+
+    Przy błędzie źródła zwraca ostatnią zapisaną historię (z pliku stanu)."""
+    cache_path = state_dir / "markets_history.json" if state_dir else None
+    cache = {}
+    if cache_path and cache_path.exists():
+        try:
+            cache = json.loads(cache_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            cache = {}
+    out = {}
+    for label, ysym, _ in TICKERS:
+        try:
+            r = _get(f"https://query2.finance.yahoo.com/v8/finance/chart/{ysym}", {"range": "2mo", "interval": "1d"})
+            r.raise_for_status()
+            res = r.json()["chart"]["result"][0]
+            off = res["meta"].get("gmtoffset", 0)
+            q = res["indicators"]["quote"][0]
+            rows = []
+            for i, ts in enumerate(res.get("timestamp") or []):
+                o, h, lo, c = q["open"][i], q["high"][i], q["low"][i], q["close"][i]
+                if None in (o, h, lo, c):
+                    continue
+                day = datetime.fromtimestamp(ts + off, timezone.utc).strftime("%Y-%m-%d")
+                if rows and rows[-1]["d"] == day:
+                    rows.pop()
+                rows.append({"d": day, "o": o, "h": h, "l": lo, "c": c})
+            if len(rows) >= 2:
+                out[label] = rows[-days:]
+                cache[label] = out[label]
+        except Exception as e:  # noqa: BLE001
+            log.warning("Historia %s nie przyszła: %s", label, e)
+        if label not in out and label in cache:
+            out[label] = cache[label]
+    if cache_path:
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        cache_path.write_text(json.dumps(cache), encoding="utf-8")
+    return out
+
+
+def fake_history(days: int = 22) -> dict[str, list[dict]]:
+    import random  # noqa: PLC0415
+    out = {}
+    for m in fake():
+        rnd = random.Random(m["label"])
+        p = m["price"] / (1 + m["change_pct"] / 100) * (1 + rnd.uniform(-0.06, 0.06))
+        rows = []
+        for i in range(days):
+            o = p
+            c = o * (1 + rnd.gauss(0, 0.011))
+            if i == days - 1:
+                c = m["price"]
+            rows.append({"d": f"2026-10-{i + 1:02d}", "o": o, "h": max(o, c) * (1 + abs(rnd.gauss(0, 0.004))),
+                         "l": min(o, c) * (1 - abs(rnd.gauss(0, 0.004))), "c": c})
+            p = c
+        out[m["label"]] = rows
+    return out

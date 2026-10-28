@@ -7,11 +7,11 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-from datetime import timezone
+from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from . import gdelt, headlines, markets, render, score
+from . import gdelt, headlines, markets, render, score, screens, weather
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -60,6 +60,19 @@ def main(argv=None) -> None:
     when = when_utc.astimezone(ZoneInfo(a.tz))
     quotes = markets.fake() if a.fake else ([] if a.no_markets else markets.fetch(a.state))
     render.render(levels, stories, when, a.out, baseline_days, a.scheme, quotes)
+
+    # dodatkowe ekrany (przyciski na obudowie) – błąd w nich nie może zepsuć mapy
+    now = datetime.now(ZoneInfo(a.tz)) if not a.fake else when
+    try:
+        hist = markets.fake_history() if a.fake else markets.history(a.state)
+        screens.render_markets(hist, quotes, now, a.out, a.scheme)
+    except Exception:  # noqa: BLE001
+        log.exception("Ekran RYNKI się nie wygenerował")
+    try:
+        w = weather.fake() if a.fake else weather.fetch(a.state)
+        screens.render_briefing(w, screens.digest_titles(now), stories, quotes, now, a.out, a.scheme)
+    except Exception:  # noqa: BLE001
+        log.exception("Ekran BRIEFING się nie wygenerował")
 
     meta = {
         "generated_utc": when_utc.astimezone(timezone.utc).isoformat(),

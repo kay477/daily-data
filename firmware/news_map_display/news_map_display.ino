@@ -3,10 +3,16 @@
 
   Co robi:
     1. budzi się, łączy z Wi-Fi, ustawia czas z NTP,
-    2. pobiera news.bin (gotowa ramka 800x480, 4 bity/piksel) z GitHub Pages,
+    2. pobiera ramkę bieżącego ekranu (800x480, 4 bity/piksel) z GitHub Pages,
     3. jeśli obrazek się zmienił – rysuje go na ekranie,
     4. zasypia do następnej aktualizacji (w nocy śpi do rana).
-  Przycisk (GPIO 3) budzi urządzenie i wymusza odświeżenie.
+
+  Trzy ekrany, wybierane przyciskami (patrząc od przodu):
+    lewy      -> MAPA      (news.bin)
+    środkowy  -> RYNKI     (rynki.bin)
+    prawy     -> BRIEFING  (briefing.bin)
+  Przycisk bieżącego ekranu wymusza jego odświeżenie. Dioda świeci, gdy urządzenie pracuje.
+  Pierwsza aktualizacja po nocy przełącza na MORNING_SCREEN (domyślnie briefing).
 
   Arduino IDE:
     Płytka:  esp32 by Espressif -> XIAO_ESP32S3
@@ -32,7 +38,21 @@
 #define EPD_DC   11
 #define EPD_RST  12
 #define EPD_BUSY 13
-#define BUTTON_PIN GPIO_NUM_3   // przyciski są aktywne stanem niskim
+// przyciski są aktywne stanem niskim; KEY0 = prawy (zielony), KEY1 = środkowy, KEY2 = lewy
+#define KEY0 GPIO_NUM_3
+#define KEY1 GPIO_NUM_4
+#define KEY2 GPIO_NUM_5
+#define LED_PIN 6               // dioda na obudowie, LOW = świeci
+
+// ---- ekrany ----
+enum Screen : uint8_t { SCR_MAP = 0, SCR_MARKETS = 1, SCR_BRIEF = 2, SCR_COUNT = 3 };
+static const char* SCREEN_FILE[SCR_COUNT] = {"news.bin", "rynki.bin", "briefing.bin"};
+static const char* SCREEN_NAME[SCR_COUNT] = {"MAPA", "RYNKI", "BRIEFING"};
+
+// starsze config.h nie mają tych ustawień – wtedy wartości domyślne
+#ifndef MORNING_SCREEN
+#define MORNING_SCREEN SCR_BRIEF   // ustaw -1, żeby rano nie przełączał ekranu
+#endif
 
 static const uint16_t W = 800, H = 480;
 static const size_t FRAME_BYTES = (size_t)W * H / 2;  // 192 000
@@ -44,8 +64,21 @@ SPIClass hspi(HSPI);
 GxEPD2_7C<GxEPD2_730c_GDEP073E01, GxEPD2_730c_GDEP073E01::HEIGHT / 4>
     display(GxEPD2_730c_GDEP073E01(EPD_CS, EPD_DC, EPD_RST, EPD_BUSY));
 
-RTC_DATA_ATTR uint32_t lastHash = 0;   // przetrwa deep sleep
+RTC_DATA_ATTR uint32_t lastHash = 0;     // przetrwa deep sleep
 RTC_DATA_ATTR uint32_t failCount = 0;
+RTC_DATA_ATTR uint8_t screen = SCR_MAP;   // co jest teraz na ekranie
+RTC_DATA_ATTR bool sleptOverNight = false;
+
+// deklaracje z góry – Arduino IDE nie musi ich wtedy zgadywać
+uint32_t fnv1a(const uint8_t* p, size_t n);
+bool connectWifi();
+bool syncTime();
+String screenUrl(uint8_t scr);
+bool download(uint8_t* buf, const String& url);
+void drawFrame(const uint8_t* buf);
+uint64_t secondsToNextUpdate();
+void goToSleep(uint64_t seconds);
+int screenFromWakeup();
 
 // ---------------------------------------------------------------------------
 
@@ -70,13 +103,20 @@ bool syncTime() {
 }
 
 // Pobiera ramkę do bufora w PSRAM. Zwraca true, gdy przyszło dokładnie 192 000 bajtów.
-bool download(uint8_t* buf) {
+// Adres pliku danego ekranu: IMAGE_URL z config.h to .../news.bin, podmieniamy nazwę pliku.
+String screenUrl(uint8_t scr) {
+  String base = IMAGE_URL;
+  return base.substring(0, base.lastIndexOf('/') + 1) + SCREEN_FILE[scr];
+}
+
+bool download(uint8_t* buf, const String& url) {
   WiFiClientSecure client;
   client.setInsecure();               // nie sprawdzamy certyfikatu – to tylko obrazek
   HTTPClient http;
   http.setTimeout(20000);
   http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
-  if (!http.begin(client, IMAGE_URL)) return false;
+  Serial.println(url);
+  if (!http.begin(client, url)) return false;
   int code = http.GET();
   Serial.printf("HTTP %d, rozmiar %d\n", code, http.getSize());
   if (code != HTTP_CODE_OK) { http.end(); return false; }
@@ -131,6 +171,7 @@ uint64_t secondsToNextUpdate() {
   bool night = NIGHT_START > NIGHT_END
                    ? (nextHour >= NIGHT_START || nextHour < NIGHT_END)
                    : (nextHour >= NIGHT_START && nextHour < NIGHT_END);
+  sleptOverNight = night;
   if (night) {
     next = NIGHT_END * 3600 + WAKE_MINUTE * 60;
     if (next <= now) next += 24 * 3600;
@@ -143,20 +184,49 @@ uint64_t secondsToNextUpdate() {
 void goToSleep(uint64_t seconds) {
   Serial.printf("Śpię %llu s\n", seconds);
   Serial.flush();
+  digitalWrite(LED_PIN, HIGH);  // dioda gaśnie
   WiFi.disconnect(true);
   WiFi.mode(WIFI_OFF);
   esp_sleep_enable_timer_wakeup(seconds * 1000000ULL);
-  rtc_gpio_pullup_en(BUTTON_PIN);
-  rtc_gpio_pulldown_dis(BUTTON_PIN);
-  esp_sleep_enable_ext0_wakeup(BUTTON_PIN, 0);
+  const gpio_num_t keys[3] = {KEY0, KEY1, KEY2};
+  uint64_t mask = 0;
+  for (gpio_num_t k : keys) {
+    rtc_gpio_pullup_en(k);
+    rtc_gpio_pulldown_dis(k);
+    mask |= 1ULL << k;
+  }
+  esp_sleep_enable_ext1_wakeup(mask, ESP_EXT1_WAKEUP_ANY_LOW);  // dowolny przycisk budzi
   esp_deep_sleep_start();
+}
+
+// Który przycisk obudził urządzenie -> który ekran. -1 = nie przycisk.
+int screenFromWakeup() {
+  if (esp_sleep_get_wakeup_cause() != ESP_SLEEP_WAKEUP_EXT1) return -1;
+  uint64_t st = esp_sleep_get_ext1_wakeup_status();
+  if (st & (1ULL << KEY2)) return SCR_MAP;
+  if (st & (1ULL << KEY1)) return SCR_MARKETS;
+  if (st & (1ULL << KEY0)) return SCR_BRIEF;
+  return -1;
 }
 
 void setup() {
   Serial.begin(115200);
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);  // dioda świeci = pracuję
   delay(300);
-  bool byButton = esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT0;
-  Serial.printf("\n== News Map == (przycisk: %d)\n", byButton);
+
+  int pressed = screenFromWakeup();
+  bool byButton = pressed >= 0;
+  bool forceDraw = byButton;
+  if (byButton) {
+    screen = pressed;
+  } else if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TIMER && sleptOverNight
+             && MORNING_SCREEN >= 0 && MORNING_SCREEN < SCR_COUNT && screen != MORNING_SCREEN) {
+    screen = MORNING_SCREEN;   // dzień dobry – zaczynamy od briefingu
+    forceDraw = true;
+  }
+  if (screen >= SCR_COUNT) screen = SCR_MAP;
+  Serial.printf("\n== News Map == ekran: %s (przycisk: %d)\n", SCREEN_NAME[screen], byButton);
 
   uint8_t* buf = (uint8_t*)ps_malloc(FRAME_BYTES);
   if (!buf) {
@@ -164,12 +234,12 @@ void setup() {
     goToSleep(3600);
   }
 
-  bool ok = connectWifi() && download(buf);
+  bool ok = connectWifi() && download(buf, screenUrl(screen));
   syncTime();
   if (ok) {
     failCount = 0;
     uint32_t h = fnv1a(buf, FRAME_BYTES);
-    if (h != lastHash || byButton) {
+    if (h != lastHash || forceDraw) {
       Serial.println("Nowy obrazek – rysuję (ok. 20 s)");
       drawFrame(buf);
       lastHash = h;
