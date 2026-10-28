@@ -25,6 +25,9 @@ TICKERS = [
     ("WIG20", "WIG20.WA", None),
     ("CDPR", "CDR.WA", None),
 ]
+# Yahoo daje historię WIG20 tylko z 5 dni. Brakujące starsze sesje dorysowujemy z ETF-u na WIG20TR
+# (Beta ETF, ten sam skład indeksu), przeskalowanego do poziomu WIG20 – na wykresie oznaczone "*HIST.WG ETF".
+PROXY = {"WIG20": "ETFBW20TR.WA"}
 UA = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"}
 TIMEOUT = 15
 MAX_CACHE_AGE_H = 72  # starsze dane z pamięci podręcznej nie są już pokazywane
@@ -166,6 +169,18 @@ def _yahoo_rows(symbol: str, rng: str, interval: str) -> list[dict]:
     return [days[k] for k in sorted(days)]
 
 
+def _with_proxy(real: list[dict], proxy: list[dict], days: int) -> list[dict]:
+    """Dokleja z przodu sesje z instrumentu zastępczego, przeskalowane w dniu wspólnym z prawdziwą historią."""
+    pmap = {r["d"]: r for r in proxy}
+    anchor = next((r for r in real if r["d"] in pmap), None)
+    if not anchor:
+        return real
+    k = anchor["c"] / pmap[anchor["d"]]["c"]
+    older = [{"d": r["d"], "o": r["o"] * k, "h": r["h"] * k, "l": r["l"] * k, "c": r["c"] * k, "p": True}
+             for r in proxy if r["d"] < real[0]["d"]]
+    return (older + real)[-days:]
+
+
 def history(state_dir: Path | None = None, days: int = 30) -> dict[str, list[dict]]:
     """Świece dzienne z ostatniego miesiąca dla ekranu RYNKI: {etykieta: [{d, o, h, l, c}]}.
 
@@ -196,6 +211,11 @@ def history(state_dir: Path | None = None, days: int = 30) -> dict[str, list[dic
         if series:
             cache[label] = series
             out[label] = series
+        if label in PROXY and series and len(series) < days:
+            try:
+                out[label] = _with_proxy(series, _yahoo_rows(PROXY[label], "2mo", "1d"), days)
+            except Exception as e:  # noqa: BLE001
+                log.warning("Historia zastępcza %s nie przyszła: %s", label, e)
     if cache_path:
         cache_path.parent.mkdir(parents=True, exist_ok=True)
         cache_path.write_text(json.dumps(cache), encoding="utf-8")
