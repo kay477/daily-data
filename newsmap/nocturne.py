@@ -158,7 +158,7 @@ def hud(d, when: datetime, wake: str):
     d.text((W - 12, H - 11), "▮▮▮▯ STANDBY", font=fs, fill=GREEN, anchor="rm")
 
 
-def render_night(when: datetime, out_dir: Path, wake: str = "06:25") -> Image.Image:
+def render_night(when: datetime, out_dir: Path, wake: str = "06:00") -> Image.Image:
     rnd = random.Random(when.strftime("%Y-%m-%d"))
     img = Image.new("P", (W, H), BLACK)
     img.putpalette([c for rgb in PALETTE_RGB for c in rgb] + [0] * (256 - len(PALETTE_RGB)) * 3)

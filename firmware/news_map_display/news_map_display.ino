@@ -12,7 +12,7 @@
     środkowy  -> RYNKI     (rynki.bin)
     prawy     -> BRIEFING  (briefing.bin)
   Przycisk bieżącego ekranu wymusza jego odświeżenie. Dioda świeci, gdy urządzenie pracuje.
-  Pierwsza aktualizacja po nocy przełącza na MORNING_SCREEN (domyślnie briefing).
+  Pierwsza aktualizacja po nocy (o 6:00) przełącza na MORNING_SCREEN (domyślnie briefing).
   Ostatnia aktualizacja przed ciszą nocną rysuje nocną panoramę miasta (nocturne.bin).
   Na briefingu urządzenie dopisuje w nagłówku stan baterii i temperaturę w pokoju (czujnik SHT4x).
 
@@ -65,6 +65,9 @@ static const char* SCREEN_NAME[SCR_COUNT] = {"MAPA", "RYNKI", "BRIEFING"};
 // starsze config.h nie mają tych ustawień – wtedy wartości domyślne
 #ifndef MORNING_SCREEN
 #define MORNING_SCREEN SCR_BRIEF   // ustaw -1, żeby rano nie przełączał ekranu
+#endif
+#ifndef MORNING_MINUTE
+#define MORNING_MINUTE 0           // pierwsza aktualizacja po nocy o NIGHT_END:MORNING_MINUTE (6:00)
 #endif
 
 static const uint16_t W = 800, H = 480;
@@ -319,7 +322,7 @@ uint64_t secondsToNextUpdate() {
                    : (nextHour >= NIGHT_START && nextHour < NIGHT_END);
   sleptOverNight = night;
   if (night) {
-    next = NIGHT_END * 3600 + WAKE_MINUTE * 60;
+    next = NIGHT_END * 3600 + MORNING_MINUTE * 60;
     if (next <= now) next += 24 * 3600;
   }
   int s = next - now;

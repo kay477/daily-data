@@ -3,6 +3,10 @@ name: Aktualizacja mapy
 on:
   schedule:
     - cron: "7 * * * *"   # co godzinę, 7 min po pełnej (GDELT publikuje co 15 min)
+    # dodatkowo przed poranną aktualizacją ekranu o 6:00 (GitHub potrafi spóźniać zwykłe przebiegi);
+    # 4:45 UTC = 5:45 zimą, 3:45 UTC = 5:45 latem – prasówka jest już wtedy w repo
+    - cron: "45 3 * * *"
+    - cron: "45 4 * * *"
   workflow_dispatch:
     inputs:
       backfill_days:

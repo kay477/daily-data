@@ -31,3 +31,5 @@
 
 // Który ekran pokazać przy pierwszej aktualizacji po nocy: 0 = mapa, 1 = rynki, 2 = briefing, -1 = bez zmiany
 #define MORNING_SCREEN 2
+// O której minucie godziny NIGHT_END ma być pierwsza aktualizacja po nocy (0 = 6:00)
+#define MORNING_MINUTE 0
