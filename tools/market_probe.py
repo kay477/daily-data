@@ -21,9 +21,10 @@ probe("y ETFBW20TR.WA", lambda: y("ETFBW20TR.WA", range="2mo", interval="1d"))
 probe("y FW20Z2620.WA", lambda: y("FW20Z2620.WA", range="2mo", interval="1d"))
 def bankier(params):
     r = cr.get("https://www.bankier.pl/new-charts/get-data", params=params, impersonate="chrome", timeout=15)
-    t = r.text
-    return f"HTTP {r.status_code} len={len(t)} {t[:300]!r}"
+    d = r.json()
+    return {k: (len(v), v[:2], v[-3:]) if isinstance(v, list) else v for k, v in d.items() if k != "navigator"}
 probe("bankier ohlc", lambda: bankier({"symbol": "WIG20", "intraday": "false", "type": "ohlc", "max_period": "false", "date_from": (p1)*1000, "date_to": now*1000}))
+probe("bankier cdr", lambda: bankier({"symbol": "CDPROJEKT", "intraday": "false", "type": "ohlc", "max_period": "false", "date_from": (p1)*1000, "date_to": now*1000}))
 probe("bankier area", lambda: bankier({"symbol": "WIG20", "intraday": "false", "type": "area", "max_period": "false", "date_from": (p1)*1000, "date_to": now*1000}))
 def gpwb():
     r = cr.get("https://gpwbenchmark.pl/chart-json.php", params={"req": json.dumps([{"isin": "PL9999999987", "mode": "RANGE", "from": time.strftime("%Y-%m-%d", time.gmtime(p1)), "to": time.strftime("%Y-%m-%d", time.gmtime(now))}])}, impersonate="chrome", timeout=15)
