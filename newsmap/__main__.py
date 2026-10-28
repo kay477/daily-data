@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from . import gdelt, headlines, markets, render, score, screens, weather
+from . import gdelt, headlines, markets, nocturne, render, score, screens, weather
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -73,6 +73,10 @@ def main(argv=None) -> None:
         screens.render_briefing(w, screens.digest_titles(now), stories, quotes, now, a.out, a.scheme)
     except Exception:  # noqa: BLE001
         log.exception("Ekran BRIEFING się nie wygenerował")
+    try:
+        nocturne.render_night(now, a.out)
+    except Exception:  # noqa: BLE001
+        log.exception("Nocna panorama się nie wygenerowała")
 
     meta = {
         "generated_utc": when_utc.astimezone(timezone.utc).isoformat(),

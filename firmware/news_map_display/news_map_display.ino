@@ -13,6 +13,8 @@
     prawy     -> BRIEFING  (briefing.bin)
   Przycisk bieżącego ekranu wymusza jego odświeżenie. Dioda świeci, gdy urządzenie pracuje.
   Pierwsza aktualizacja po nocy przełącza na MORNING_SCREEN (domyślnie briefing).
+  Ostatnia aktualizacja przed ciszą nocną rysuje nocną panoramę miasta (nocturne.bin).
+  Na briefingu urządzenie dopisuje w nagłówku stan baterii i temperaturę w pokoju (czujnik SHT4x).
 
   Arduino IDE:
     Płytka:  esp32 by Espressif -> XIAO_ESP32S3
@@ -28,6 +30,7 @@
 #include <time.h>
 #include <esp_sleep.h>
 #include <driver/rtc_io.h>
+#include <Wire.h>
 #include <GxEPD2_7C.h>
 #include "config.h"
 
@@ -43,6 +46,16 @@
 #define KEY1 GPIO_NUM_4
 #define KEY2 GPIO_NUM_5
 #define LED_PIN 6               // dioda na obudowie, LOW = świeci
+#define BATT_ADC_PIN 1          // napięcie baterii przez dzielnik 1:2
+#define BATT_EN_PIN 21          // włącza pomiar baterii
+#define SHT_SDA 19              // czujnik temperatury i wilgotności SHT4x (I2C 0x44)
+#define SHT_SCL 20
+
+// Miejsce w nagłówku briefingu na baterię i temperaturę – MUSI zgadzać się z SLOT/BATT_*/HOUSE_X
+// w newsmap/screens.py. Kolor napisów bierzemy z obrysu baterii narysowanego na serwerze.
+#define BATT_X 444
+#define BATT_Y 10
+#define HOUSE_X 530
 
 // ---- ekrany ----
 enum Screen : uint8_t { SCR_MAP = 0, SCR_MARKETS = 1, SCR_BRIEF = 2, SCR_COUNT = 3 };
@@ -69,13 +82,19 @@ RTC_DATA_ATTR uint32_t failCount = 0;
 RTC_DATA_ATTR uint8_t screen = SCR_MAP;   // co jest teraz na ekranie
 RTC_DATA_ATTR bool sleptOverNight = false;
 
+int batteryPct = -1;      // odczyty z tego obudzenia (przed włączeniem Wi-Fi, żeby były dokładniejsze)
+float roomTemp = NAN;
+
 // deklaracje z góry – Arduino IDE nie musi ich wtedy zgadywać
 uint32_t fnv1a(const uint8_t* p, size_t n);
 bool connectWifi();
 bool syncTime();
+String fileUrl(const char* name);
 String screenUrl(uint8_t scr);
 bool download(uint8_t* buf, const String& url);
-void drawFrame(const uint8_t* buf);
+void drawFrame(const uint8_t* buf, bool overlay);
+int readBattery();
+bool readRoomTemp(float& t, float& rh);
 uint64_t secondsToNextUpdate();
 void goToSleep(uint64_t seconds);
 int screenFromWakeup();
@@ -164,10 +183,12 @@ bool syncTime() {
 
 // Pobiera ramkę do bufora w PSRAM. Zwraca true, gdy przyszło dokładnie 192 000 bajtów.
 // Adres pliku danego ekranu: IMAGE_URL z config.h to .../news.bin, podmieniamy nazwę pliku.
-String screenUrl(uint8_t scr) {
+String fileUrl(const char* name) {
   String base = IMAGE_URL;
-  return base.substring(0, base.lastIndexOf('/') + 1) + SCREEN_FILE[scr];
+  return base.substring(0, base.lastIndexOf('/') + 1) + name;
 }
+
+String screenUrl(uint8_t scr) { return fileUrl(SCREEN_FILE[scr]); }
 
 bool download(uint8_t* buf, const String& url) {
   WiFiClientSecure client;
@@ -200,7 +221,37 @@ bool download(uint8_t* buf, const String& url) {
   return got == FRAME_BYTES;
 }
 
-void drawFrame(const uint8_t* buf) {
+// Kolor (indeks palety) piksela z pobranej ramki.
+uint8_t pixelAt(const uint8_t* buf, int x, int y) {
+  uint8_t b = buf[(size_t)y * (W / 2) + x / 2];
+  return (x % 2 == 0) ? (b >> 4) : (b & 0x0F);
+}
+
+// Bateria i temperatura w pokoju w nagłówku briefingu.
+void drawDeviceInfo(const uint8_t* buf) {
+  uint8_t fg = pixelAt(buf, BATT_X, BATT_Y);
+  if (fg > 5) return;
+  uint16_t c = COLORS[fg];
+  if (batteryPct >= 0) {
+    int segs = batteryPct <= 0 ? 0 : min(4, (batteryPct + 24) / 25);
+    for (int i = 0; i < segs; i++) display.fillRect(BATT_X + 2 + i * 5, BATT_Y + 2, 4, 8, c);
+  }
+  display.setTextSize(2);
+  display.setTextColor(c);
+  display.setCursor(BATT_X + 28, BATT_Y - 1);
+  if (batteryPct >= 0) { display.print(batteryPct); display.print('%'); }
+  else display.print("--");
+  display.setCursor(HOUSE_X + 17, BATT_Y - 1);
+  if (!isnan(roomTemp)) {
+    display.print((int)lroundf(roomTemp));
+    int16_t cx = display.getCursorX();
+    display.drawCircle(cx + 3, BATT_Y + 1, 2, c);   // znak stopnia
+  } else {
+    display.print("--");
+  }
+}
+
+void drawFrame(const uint8_t* buf, bool overlay) {
   hspi.begin(EPD_SCK, -1, EPD_MOSI, -1);
   display.init(115200, true, 2, false, hspi, SPISettings(2000000, MSBFIRST, SPI_MODE0));
   display.setRotation(0);
@@ -217,14 +268,49 @@ void drawFrame(const uint8_t* buf) {
         if (c != 1 && c < 6) display.drawPixel(x + 1, y, COLORS[c]);
       }
     }
+    if (overlay) drawDeviceInfo(buf);
   } while (display.nextPage());
   display.hibernate();
+}
+
+// Bateria w procentach (krzywa napięcia ogniwa Li-ion), -1 gdy pomiar się nie udał.
+int readBattery() {
+  pinMode(BATT_EN_PIN, OUTPUT);
+  digitalWrite(BATT_EN_PIN, HIGH);
+  delay(10);
+  uint32_t mv = 0;
+  for (int i = 0; i < 16; i++) mv += analogReadMilliVolts(BATT_ADC_PIN);
+  digitalWrite(BATT_EN_PIN, LOW);
+  mv = mv / 16 * 2;  // dzielnik 1:2
+  Serial.printf("Bateria: %u mV\n", (unsigned)mv);
+  if (mv < 2500) return -1;  // brak baterii / zły odczyt
+  static const uint16_t V[] = {3300, 3500, 3600, 3700, 3800, 3900, 4000, 4100, 4200};
+  static const uint8_t P[] = {0, 10, 22, 38, 52, 65, 78, 90, 100};
+  if (mv <= V[0]) return 0;
+  for (int i = 1; i < 9; i++)
+    if (mv <= V[i]) return P[i - 1] + (int)((mv - V[i - 1]) * (P[i] - P[i - 1]) / (V[i] - V[i - 1]));
+  return 100;
+}
+
+// SHT4x bez dodatkowej biblioteki: komenda 0xFD = pomiar wysokiej precyzji.
+bool readRoomTemp(float& t, float& rh) {
+  Wire.begin(SHT_SDA, SHT_SCL);
+  Wire.beginTransmission(0x44);
+  Wire.write(0xFD);
+  if (Wire.endTransmission() != 0) return false;
+  delay(10);
+  if (Wire.requestFrom(0x44, 6) != 6) return false;
+  uint8_t b[6];
+  for (int i = 0; i < 6; i++) b[i] = Wire.read();
+  t = -45.0f + 175.0f * ((b[0] << 8) | b[1]) / 65535.0f;
+  rh = constrain(-6.0f + 125.0f * ((b[3] << 8) | b[4]) / 65535.0f, 0.0f, 100.0f);
+  return true;
 }
 
 // Ile sekund spać: do minuty WAKE_MINUTE następnej godziny, a w nocy do rana.
 uint64_t secondsToNextUpdate() {
   struct tm t;
-  if (!getLocalTime(&t, 100)) return 3600;
+  if (!getLocalTime(&t, 100)) { sleptOverNight = false; return 3600; }
   int now = t.tm_hour * 3600 + t.tm_min * 60 + t.tm_sec;
   int next = (t.tm_hour + (t.tm_min >= WAKE_MINUTE ? 1 : 0)) * 3600 + WAKE_MINUTE * 60;
   int nextHour = (next / 3600) % 24;
@@ -288,20 +374,33 @@ void setup() {
   if (screen >= SCR_COUNT) screen = SCR_MAP;
   Serial.printf("\n== News Map == ekran: %s (przycisk: %d)\n", SCREEN_NAME[screen], byButton);
 
+  // czujniki odczytujemy przed Wi-Fi: radio grzeje płytkę i obciąża baterię
+  batteryPct = readBattery();
+  float rh;
+  if (readRoomTemp(roomTemp, rh)) Serial.printf("Pokój: %.1f°C, %.0f%%\n", roomTemp, rh);
+  else { roomTemp = NAN; Serial.println("SHT4x: brak odczytu"); }
+
   uint8_t* buf = (uint8_t*)ps_malloc(FRAME_BYTES);
   if (!buf) {
     Serial.println("Brak PSRAM! Ustaw Tools -> PSRAM -> OPI PSRAM");
     goToSleep(3600);
   }
 
-  bool ok = connectWifi() && download(buf, screenUrl(screen));
-  syncTime();
+  bool wifi = connectWifi();
+  bool timeOk = wifi && syncTime();
+  // Czy po tej aktualizacji idziemy spać na całą noc? Wtedy zamiast ekranu – nocna panorama.
+  secondsToNextUpdate();
+  bool nightNext = timeOk && sleptOverNight && !byButton;
+  String url = nightNext ? fileUrl("nocturne.bin") : screenUrl(screen);
+  if (nightNext) Serial.println("Ostatnia aktualizacja przed nocą – nocna panorama");
+
+  bool ok = wifi && download(buf, url);
   if (ok) {
     failCount = 0;
     uint32_t h = fnv1a(buf, FRAME_BYTES);
     if (h != lastHash || forceDraw) {
       Serial.println("Nowy obrazek – rysuję (ok. 20 s)");
-      drawFrame(buf);
+      drawFrame(buf, !nightNext && screen == SCR_BRIEF);
       lastHash = h;
     } else {
       Serial.println("Bez zmian – nie odświeżam ekranu");

@@ -21,6 +21,12 @@ from .render import (BLUE, GREEN, H, PALETTE_RGB, RED, SCHEMES, W, DNI, dotted_l
 
 ROOT = Path(__file__).resolve().parent.parent
 TABS = ["MAPA", "RYNKI", "BRIEF"]
+
+# Miejsce w nagłówku BRIEFINGU, w które firmware dorysowuje baterię i temperaturę w pokoju.
+# Te liczby MUSZĄ zgadzać się z BATT_* w firmware/news_map_display/news_map_display.ino.
+SLOT_X0, SLOT_X1 = 440, 600
+BATT_X, BATT_Y = 444, 10        # lewy górny róg obrysu baterii 22x12 (firmware bierze stąd kolor)
+HOUSE_X = 530                   # ikonka domku przed temperaturą
 HEADER_H, FOOTER_H = 32, 22
 
 
@@ -114,7 +120,19 @@ def panel(d, sc, box, title: str, idx: int) -> None:
         d.line((xx, y1 - (4 if (xx - x0) % 50 < 10 else 2), xx, y1), fill=col)
 
 
-def header(d: ImageDraw.ImageDraw, sc: dict, logo: tuple[str, str], active: int, when: datetime) -> None:
+def device_slot(d: ImageDraw.ImageDraw, sc: dict) -> None:
+    """Ikony baterii i domku; liczby obok dorysowuje samo urządzenie (zna je tylko ono)."""
+    fg = sc["header_fg"]
+    d.rectangle((SLOT_X0, 4, SLOT_X1, 28), fill=sc["header_bg"])
+    d.rectangle((BATT_X, BATT_Y, BATT_X + 21, BATT_Y + 11), outline=fg)
+    d.rectangle((BATT_X + 22, BATT_Y + 3, BATT_X + 23, BATT_Y + 8), fill=fg)
+    hx, hy = HOUSE_X, BATT_Y
+    d.polygon([(hx, hy + 6), (hx + 6, hy), (hx + 12, hy + 6)], outline=fg)
+    d.rectangle((hx + 2, hy + 6, hx + 10, hy + 12), outline=fg)
+
+
+def header(d: ImageDraw.ImageDraw, sc: dict, logo: tuple[str, str], active: int, when: datetime,
+           slot: bool = False) -> None:
     d.rectangle((0, 0, W, HEADER_H), fill=sc["header_bg"])
     ft = font(20, True, "mono")
     a, b = logo
@@ -135,12 +153,20 @@ def header(d: ImageDraw.ImageDraw, sc: dict, logo: tuple[str, str], active: int,
             d.text((x + 9, 17), f"{i + 1}:{name}", font=fz, fill=sc["header_fg"], anchor="lm")
             x += w + 22
 
-    stamp = f"{DNI[when.weekday()]} {when:%d.%m.%Y} // {when:%H:%M}"
+    stamp = f"{DNI[when.weekday()]} {when:%d.%m}" + ("" if slot else f".{when:%Y}") + f" // {when:%H:%M}"
     fm = font(16, True, "mono")
     sx = W - 12 - d.textlength(stamp, font=fm)
     d.text((sx, 8), stamp, font=fm, fill=sc["header_fg"])
-    if sx - 14 - (x + 8) > 30:
-        stripes(d, (int(x + 8), 9, int(sx - 14), 23), sc["header_fg"] if sc["stripes"] else soft(sc))
+    stripe_col = sc["header_fg"] if sc["stripes"] else soft(sc)
+    if slot:
+        assert x < SLOT_X0 and sx > SLOT_X1, "zakładki albo data nachodzą na miejsce na baterię"
+        if SLOT_X0 - 10 - (x + 8) > 20:
+            stripes(d, (int(x + 8), 9, SLOT_X0 - 10, 23), stripe_col)
+        if sx - 14 - (SLOT_X1 + 8) > 20:
+            stripes(d, (SLOT_X1 + 8, 9, int(sx - 14), 23), stripe_col)
+        device_slot(d, sc)
+    elif sx - 14 - (x + 8) > 30:
+        stripes(d, (int(x + 8), 9, int(sx - 14), 23), stripe_col)
     if sc["frame"] == "cut":
         d.polygon([(W - 18, HEADER_H), (W, HEADER_H - 18), (W, HEADER_H)], fill=sc["bg"])
     d.line((0, HEADER_H, W, HEADER_H), fill=sc["line"])
@@ -377,7 +403,7 @@ def render_briefing(w: dict | None, titles: list[str], stories: list[dict], quot
                     when: datetime, out_dir: Path, scheme: str) -> Image.Image:
     sc = SCHEMES[scheme]
     img, d = canvas(sc)
-    header(d, sc, ("BRIEF", "//DNIA"), 2, when)
+    header(d, sc, ("BRIEF", "//DNIA"), 2, when, slot=True)
     top = footer_bar(d, sc)
 
     split = 296

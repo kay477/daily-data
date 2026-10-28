@@ -118,3 +118,8 @@ Kształty krajów: Natural Earth (domena publiczna), pakiety world-atlas i us-at
 Naciśnięcie przycisku ekranu, który już jest na wyświetlaczu, wymusza jego odświeżenie. Dioda świeci, gdy urządzenie pobiera i rysuje. Co godzinę odświeża się ekran, który akurat jest wybrany, a pierwsza aktualizacja po nocy przełącza na `MORNING_SCREEN` z `config.h` (domyślnie briefing; `-1` wyłącza).
 
 Wszystkie trzy obrazki generuje ten sam workflow co godzinę (`newsmap/screens.py`, pogoda w `newsmap/weather.py`). Podglądy: `rynki.png`, `briefing.png`. Styl (`NEWSMAP_SCHEME`) dotyczy wszystkich ekranów.
+
+## Bateria, temperatura w pokoju i nocna panorama
+
+- Na ekranie BRIEFING, w nagłówku między zakładkami a datą, urządzenie samo dopisuje stan baterii (%) i temperaturę w pokoju z wbudowanego czujnika SHT4x. Serwer rysuje tam tylko ikonki (`device_slot` w `newsmap/screens.py`); pozycje muszą się zgadzać z `BATT_X/BATT_Y/HOUSE_X` w firmware. Odczyt jest robiony przed włączeniem Wi-Fi, a liczby odświeżają się razem z ekranem.
+- Ostatnia aktualizacja przed ciszą nocną (domyślnie o 22:25) pobiera `nocturne.bin` – generatywną panoramę neonowego miasta, inną każdej nocy (ziarno = data, `newsmap/nocturne.py`). Rano pierwsza aktualizacja wraca do zwykłego ekranu.
