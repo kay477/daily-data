@@ -1,0 +1,327 @@
+{
+ "y WIG20.WA period": {
+  "n": 1,
+  "nonnull": 1,
+  "last": [
+   4238.3798828125
+  ],
+  "valid": [
+   "1d",
+   "5d"
+  ]
+ },
+ "y WIG20.WA 1h 5d": {
+  "n": 37,
+  "nonnull": 37,
+  "last": [
+   4238.9501953125,
+   4238.3798828125,
+   4238.3798828125
+  ],
+  "valid": [
+   "1d",
+   "5d"
+  ]
+ },
+ "y ^WIG20": "HTTP 404",
+ "y WIG20TR.WA": {
+  "n": 1,
+  "nonnull": 1,
+  "last": [
+   9767.2197265625
+  ],
+  "valid": [
+   "1d",
+   "5d"
+  ]
+ },
+ "y ETFBW20TR.WA": {
+  "n": 44,
+  "nonnull": 43,
+  "last": [
+   87.13999938964844,
+   87.95999908447266,
+   null
+  ],
+  "valid": [
+   "1d",
+   "5d",
+   "1mo",
+   "3mo",
+   "6mo",
+   "1y",
+   "2y",
+   "5y",
+   "10y",
+   "ytd",
+   "max"
+  ]
+ },
+ "y FW20Z2620.WA": "HTTP 404",
+ "bankier ohlc": {
+  "profileData": {
+   "prevCloseDate": "94-04-14",
+   "volumeAverageValue": "9&nbsp;027&nbsp;482&nbspszt",
+   "max": 3940.53,
+   "valueAverage": "2&nbsp;031,22",
+   "prevClose": "1&nbsp;000,00",
+   "changeValue": "2&nbsp;262,48",
+   "maxValueDate": "07-10-29",
+   "minValueDate": "95-03-28",
+   "min": 577.8,
+   "maxValue": "3&nbsp;940,53",
+   "volumeSumValue": "71&nbsp;262&nbsp;945&nbsp;608&nbspszt",
+   "interval": 11586,
+   "turnoverSumValue": "4&nbsp;018&nbsp;862,381&nbspmln",
+   "valueSum": 16034449.68,
+   "turnoverAverageValue": "509,103&nbspmln",
+   "minValue": "577,80",
+   "endDate": "2026-01-02",
+   "changePercentValue": "226,25%",
+   "startDate": "1994-04-14"
+  },
+  "volume": [
+   7894,
+   [
+    [
+     766281600000,
+     71600
+    ],
+    [
+     766627200000,
+     99950
+    ]
+   ],
+   [
+    [
+     1766966400000,
+     14008385
+    ],
+    [
+     1767052800000,
+     14890409
+    ],
+    [
+     1767312000000,
+     21965918
+    ]
+   ]
+  ],
+  "interval": 11586,
+  "main": [
+   7894,
+   [
+    [
+     766281600000,
+     1000,
+     1000,
+     1000,
+     1000
+    ],
+    [
+     766627200000,
+     1050.5,
+     1050.5,
+     1050.5,
+     1050.5
+    ]
+   ],
+   [
+    [
+     1766966400000,
+     3161.77,
+     3166.5,
+     3145.78,
+     3164.93
+    ],
+    [
+     1767052800000,
+     3168.56,
+     3204.09,
+     3167.35,
+     3184.02
+    ],
+    [
+     1767312000000,
+     3204.89,
+     3268.66,
+     3198.96,
+     3262.48
+    ]
+   ]
+  ]
+ },
+ "bankier cdr": {
+  "profileData": {
+   "prevCloseDate": "94-08-02",
+   "volumeAverageValue": "279&nbsp;503&nbspszt",
+   "max": 464.2,
+   "valueAverage": "74,2096",
+   "prevClose": "40,0000",
+   "changeValue": "201,7000",
+   "maxValueDate": "20-12-07",
+   "minValueDate": "08-10-27",
+   "min": 0.63,
+   "maxValue": "464,2000",
+   "volumeSumValue": "2&nbsp;180&nbsp;681&nbsp;152&nbspszt",
+   "interval": 11476,
+   "turnoverSumValue": "187&nbsp;259,668&nbspmln",
+   "valueSum": 578983.01,
+   "turnoverAverageValue": "24,001&nbspmln",
+   "minValue": "0,6300",
+   "endDate": "2026-01-02",
+   "changePercentValue": "504,25%",
+   "startDate": "1994-08-02"
+  },
+  "volume": [
+   7802,
+   [
+    [
+     775785600000,
+     71825
+    ],
+    [
+     775872000000,
+     67230
+    ]
+   ],
+   [
+    [
+     1766966400000,
+     115050
+    ],
+    [
+     1767052800000,
+     205596
+    ],
+    [
+     1767312000000,
+     224702
+    ]
+   ]
+  ],
+  "interval": 11476,
+  "main": [
+   7802,
+   [
+    [
+     775785600000,
+     40,
+     40,
+     40,
+     40
+    ],
+    [
+     775872000000,
+     44,
+     44,
+     44,
+     44
+    ]
+   ],
+   [
+    [
+     1766966400000,
+     241.2,
+     242.4,
+     238.7,
+     241.5
+    ],
+    [
+     1767052800000,
+     241,
+     244.5,
+     240.5,
+     241
+    ],
+    [
+     1767312000000,
+     246.9,
+     247,
+     240,
+     241.7
+    ]
+   ]
+  ]
+ },
+ "bankier area": {
+  "profileData": {
+   "prevCloseDate": "94-04-14",
+   "volumeAverageValue": "9&nbsp;027&nbsp;482&nbspszt",
+   "max": 3940.53,
+   "valueAverage": "2&nbsp;031,22",
+   "prevClose": "1&nbsp;000,00",
+   "changeValue": "2&nbsp;262,48",
+   "maxValueDate": "07-10-29",
+   "minValueDate": "95-03-28",
+   "min": 577.8,
+   "maxValue": "3&nbsp;940,53",
+   "volumeSumValue": "71&nbsp;262&nbsp;945&nbsp;608&nbspszt",
+   "interval": 11586,
+   "turnoverSumValue": "4&nbsp;018&nbsp;862,381&nbspmln",
+   "valueSum": 16034449.68,
+   "turnoverAverageValue": "509,103&nbspmln",
+   "minValue": "577,80",
+   "endDate": "2026-01-02",
+   "changePercentValue": "226,25%",
+   "startDate": "1994-04-14"
+  },
+  "volume": [
+   7894,
+   [
+    [
+     766281600000,
+     71600
+    ],
+    [
+     766627200000,
+     99950
+    ]
+   ],
+   [
+    [
+     1766966400000,
+     14008385
+    ],
+    [
+     1767052800000,
+     14890409
+    ],
+    [
+     1767312000000,
+     21965918
+    ]
+   ]
+  ],
+  "interval": 11586,
+  "main": [
+   7894,
+   [
+    [
+     766281600000,
+     1000
+    ],
+    [
+     766627200000,
+     1050.5
+    ]
+   ],
+   [
+    [
+     1766966400000,
+     3164.93
+    ],
+    [
+     1767052800000,
+     3184.02
+    ],
+    [
+     1767312000000,
+     3262.48
+    ]
+   ]
+  ]
+ },
+ "gpwbenchmark": "ERR ConnectionError: Failed to perform, curl: (56) Recv failure: Connection reset by peer. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.",
+ "gpw chart-json": "ERR ConnectionError: Failed to perform, curl: (56) Recv failure: Connection reset by peer. See https://curl.se/libcurl/c/libcurl-errors.html first for more details."
+}
