@@ -178,7 +178,7 @@ def render_markets(history: dict[str, list[dict]], quotes: list[dict], when: dat
     header(d, sc, ("RYNKI", "//TERM"), 1, when)
     top = footer_bar(d, sc)
     by_label = {q["label"]: q for q in quotes}
-    labels = list(history) or [q["label"] for q in quotes]
+    labels = [q["label"] for q in quotes] or list(history)
     gap = 8
     area = (6, HEADER_H + 10, W - 6, top - 6)
     pw = (area[2] - area[0] - gap) / 2
@@ -259,7 +259,7 @@ def weather_block(d: ImageDraw.ImageDraw, sc: dict, box: tuple[int, int, int, in
     slot = (x1 - x0) / len(idx)
     temps = [hourly["temperature_2m"][i] for i in idx]
     tmin, tmax = min(temps) - 3, max(temps)  # -3: najzimniejszy słupek też ma wysokość
-    bar_top, bar_bot = y + 30, y1 - 34
+    bar_top, bar_bot = y + 44, y1 - 34
     for k, i in enumerate(idx):
         cx = x0 + slot * (k + 0.5)
         d.text((cx, y + 14), times[i][11:13], font=fs, fill=sc["dim"] if sc["dim"] != sc["bg"] else sc["fg"], anchor="mm")

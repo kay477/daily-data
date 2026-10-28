@@ -164,12 +164,18 @@ def history(state_dir: Path | None = None, days: int = 30) -> dict[str, list[dic
             rows = []
             for i, ts in enumerate(res.get("timestamp") or []):
                 o, h, lo, c = q["open"][i], q["high"][i], q["low"][i], q["close"][i]
-                if None in (o, h, lo, c):
+                if c is None:
                     continue
+                # część indeksów (WIG20) ma w danych dziennych tylko kurs zamknięcia
+                if o is None:
+                    o = rows[-1]["c"] if rows else c
+                h = max(x for x in (h, o, c) if x is not None)
+                lo = min(x for x in (lo, o, c) if x is not None)
                 day = datetime.fromtimestamp(ts + off, timezone.utc).strftime("%Y-%m-%d")
                 if rows and rows[-1]["d"] == day:
                     rows.pop()
                 rows.append({"d": day, "o": o, "h": h, "l": lo, "c": c})
+            log.info("Historia %s: %d sesji", label, len(rows))
             if len(rows) >= 2:
                 out[label] = rows[-days:]
                 cache[label] = out[label]
