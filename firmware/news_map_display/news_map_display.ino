@@ -88,12 +88,54 @@ uint32_t fnv1a(const uint8_t* p, size_t n) {
   return h;
 }
 
+// Sieci z config.h w kolejności priorytetu; puste nazwy są pomijane.
+#ifndef WIFI_SSID2
+#define WIFI_SSID2 ""
+#define WIFI_PASS2 ""
+#endif
+#ifndef WIFI_SSID3
+#define WIFI_SSID3 ""
+#define WIFI_PASS3 ""
+#endif
+#ifndef EDUROAM_LOGIN
+#define EDUROAM_LOGIN ""
+#define EDUROAM_PASS ""
+#endif
+
+bool waitConnected(uint32_t ms) {
+  uint32_t t0 = millis();
+  while (WiFi.status() != WL_CONNECTED && millis() - t0 < ms) delay(250);
+  return WiFi.status() == WL_CONNECTED;
+}
+
+bool visible(int n, const char* ssid) {
+  for (int i = 0; i < n; i++)
+    if (WiFi.SSID(i) == ssid) return true;
+  return false;
+}
+
+// Skanuje okolicę i łączy się z pierwszą widoczną znaną siecią (dom, hotspot telefonu, eduroam...).
 bool connectWifi() {
   WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASS);
-  for (int i = 0; i < 40 && WiFi.status() != WL_CONNECTED; i++) delay(500);
-  Serial.printf("Wi-Fi: %s\n", WiFi.status() == WL_CONNECTED ? "OK" : "BRAK");
-  return WiFi.status() == WL_CONNECTED;
+  WiFi.disconnect();
+  int n = WiFi.scanNetworks();
+  Serial.printf("Wi-Fi: widzę %d sieci\n", n);
+  const char* ssids[3] = {WIFI_SSID, WIFI_SSID2, WIFI_SSID3};
+  const char* passes[3] = {WIFI_PASS, WIFI_PASS2, WIFI_PASS3};
+  for (int k = 0; k < 3; k++) {
+    if (!ssids[k][0] || (n > 0 && !visible(n, ssids[k]))) continue;
+    Serial.printf("Wi-Fi: łączę z %s\n", ssids[k]);
+    WiFi.begin(ssids[k], passes[k]);
+    if (waitConnected(15000)) { Serial.println("Wi-Fi: OK"); return true; }
+    WiFi.disconnect();
+  }
+  if (EDUROAM_LOGIN[0] && (n <= 0 || visible(n, "eduroam"))) {
+    Serial.println("Wi-Fi: łączę z eduroam");
+    WiFi.begin("eduroam", WPA2_AUTH_PEAP, EDUROAM_LOGIN, EDUROAM_LOGIN, EDUROAM_PASS);
+    if (waitConnected(20000)) { Serial.println("Wi-Fi: OK"); return true; }
+  }
+  Serial.println("Wi-Fi: BRAK – żadna znana sieć nie odpowiada");
+  return false;
 }
 
 bool syncTime() {

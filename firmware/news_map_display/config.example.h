@@ -5,6 +5,17 @@
 #define WIFI_SSID "nazwa_sieci"        // tylko Wi-Fi 2,4 GHz!
 #define WIFI_PASS "haslo"
 
+// Zapasowe sieci (opcjonalnie) – urządzenie łączy się z pierwszą, którą widzi.
+// Hotspot iPhone'a: w ustawieniach hotspotu włącz "Maksymalizuj zgodność" (2,4 GHz).
+#define WIFI_SSID2 ""
+#define WIFI_PASS2 ""
+#define WIFI_SSID3 ""
+#define WIFI_PASS3 ""
+
+// eduroam (opcjonalnie): login w formie numer_albumu@ug.edu.pl albo taki, jak masz na telefonie
+#define EDUROAM_LOGIN ""
+#define EDUROAM_PASS ""
+
 // Adres obrazka z GitHub Pages: https://<twoj-login>.github.io/<nazwa-repo>/news.bin
 #define IMAGE_URL "https://kay477.github.io/daily-data/news.bin"
 
