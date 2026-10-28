@@ -142,10 +142,36 @@ def fake() -> list[dict]:
     ]
 
 
+def _yahoo_rows(symbol: str, rng: str, interval: str) -> list[dict]:
+    """Świece z Yahoo zebrane do dziennych {d, o, h, l, c} (interval 1h jest sklejany w dni)."""
+    r = _get(f"https://query2.finance.yahoo.com/v8/finance/chart/{symbol}", {"range": rng, "interval": interval})
+    r.raise_for_status()
+    res = r.json()["chart"]["result"][0]
+    off = res["meta"].get("gmtoffset", 0)
+    q = res["indicators"]["quote"][0]
+    days: dict[str, dict] = {}
+    for i, ts in enumerate(res.get("timestamp") or []):
+        o, h, lo, c = (q.get(k, [None] * (i + 1))[i] for k in ("open", "high", "low", "close"))
+        if c is None:
+            continue
+        o = c if o is None else o
+        h = max(x for x in (h, o, c) if x is not None)
+        lo = min(x for x in (lo, o, c) if x is not None)
+        day = datetime.fromtimestamp(ts + off, timezone.utc).strftime("%Y-%m-%d")
+        if day in days:
+            dd = days[day]
+            dd["h"], dd["l"], dd["c"] = max(dd["h"], h), min(dd["l"], lo), c
+        else:
+            days[day] = {"d": day, "o": o, "h": h, "l": lo, "c": c}
+    return [days[k] for k in sorted(days)]
+
+
 def history(state_dir: Path | None = None, days: int = 30) -> dict[str, list[dict]]:
     """Świece dzienne z ostatniego miesiąca dla ekranu RYNKI: {etykieta: [{d, o, h, l, c}]}.
 
-    Przy błędzie źródła zwraca ostatnią zapisaną historię (z pliku stanu)."""
+    Yahoo daje WIG20 tylko za ostatnie 5 dni, więc historia jest też dopisywana do pliku stanu
+    i z każdym dniem się wydłuża (po ok. 6 tygodniach jest pełny miesiąc).
+    Przy błędzie źródła zostaje to, co już jest w stanie."""
     cache_path = state_dir / "markets_history.json" if state_dir else None
     cache = {}
     if cache_path and cache_path.exists():
@@ -153,41 +179,23 @@ def history(state_dir: Path | None = None, days: int = 30) -> dict[str, list[dic
             cache = json.loads(cache_path.read_text(encoding="utf-8"))
         except (OSError, ValueError):
             cache = {}
+    cache.pop("_diag", None)
     out = {}
     for label, ysym, _ in TICKERS:
+        rows = []
         try:
-            r = _get(f"https://query2.finance.yahoo.com/v8/finance/chart/{ysym}", {"range": "2mo", "interval": "1d"})
-            r.raise_for_status()
-            res = r.json()["chart"]["result"][0]
-            off = res["meta"].get("gmtoffset", 0)
-            q = res["indicators"]["quote"][0]
-            rows = []
-            for i, ts in enumerate(res.get("timestamp") or []):
-                o, h, lo, c = q["open"][i], q["high"][i], q["low"][i], q["close"][i]
-                if c is None:
-                    continue
-                # część indeksów (WIG20) ma w danych dziennych tylko kurs zamknięcia
-                if o is None:
-                    o = rows[-1]["c"] if rows else c
-                h = max(x for x in (h, o, c) if x is not None)
-                lo = min(x for x in (lo, o, c) if x is not None)
-                day = datetime.fromtimestamp(ts + off, timezone.utc).strftime("%Y-%m-%d")
-                if rows and rows[-1]["d"] == day:
-                    rows.pop()
-                rows.append({"d": day, "o": o, "h": h, "l": lo, "c": c})
+            rows = _yahoo_rows(ysym, "2mo", "1d")
+            if len(rows) < 5:  # tylko kilka dni w danych dziennych – sklejamy świece godzinowe
+                rows = _yahoo_rows(ysym, "5d", "1h")
             log.info("Historia %s: %d sesji", label, len(rows))
-            if len(rows) < 2:
-                cache.setdefault("_diag", {})[label] = {"rows": len(rows), "meta": {k: res["meta"].get(k) for k in (
-                    "dataGranularity", "range", "validRanges", "regularMarketPrice")},
-                    "n_ts": len(res.get("timestamp") or []), "closes": (q.get("close") or [])[:8]}
-            if len(rows) >= 2:
-                out[label] = rows[-days:]
-                cache[label] = out[label]
         except Exception as e:  # noqa: BLE001
             log.warning("Historia %s nie przyszła: %s", label, e)
-            cache.setdefault("_diag", {})[label] = f"{type(e).__name__}: {str(e)[:300]}"
-        if label not in out and label in cache:
-            out[label] = cache[label]
+        merged = {r["d"]: r for r in cache.get(label, [])}
+        merged.update({r["d"]: r for r in rows})
+        series = [merged[k] for k in sorted(merged)][-days:]
+        if series:
+            cache[label] = series
+            out[label] = series
     if cache_path:
         cache_path.parent.mkdir(parents=True, exist_ok=True)
         cache_path.write_text(json.dumps(cache), encoding="utf-8")
