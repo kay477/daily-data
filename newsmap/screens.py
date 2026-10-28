@@ -145,7 +145,8 @@ def candles_panel(d: ImageDraw.ImageDraw, sc: dict, box: tuple[int, int, int, in
 
     hi, lo = max(r["h"] for r in rows), min(r["l"] for r in rows)
     m1 = (last / rows[0]["o"] - 1) * 100
-    info = f"{len(rows)} SESJI   1M {'+' if m1 >= 0 else '−'}{fmt_num(abs(m1), 1)}%   MAX {fmt_num(hi, dec)}   MIN {fmt_num(lo, dec)}"
+    per = "1M" if len(rows) >= 18 else f"{len(rows)}D"
+    info = f"{len(rows)} SESJI   {per} {'+' if m1 >= 0 else '−'}{fmt_num(abs(m1), 1)}%   MAX {fmt_num(hi, dec)}   MIN {fmt_num(lo, dec)}"
     d.text((x0 + 12, y0 + 32), info, font=fs, fill=sc["dim"] if sc["dim"] != sc["bg"] else sc["fg"])
 
     # obszar wykresu
@@ -156,10 +157,11 @@ def candles_panel(d: ImageDraw.ImageDraw, sc: dict, box: tuple[int, int, int, in
         yy = cy0 + frac * (cy1 - cy0)
         dotted_line(d, [(cx0, yy), (cx1, yy)], sc["grid"], every=4)
     n = len(rows)
-    slot = (cx1 - cx0) / n
+    slot = (cx1 - cx0) / max(n, 22)   # przy krótkiej historii świece mają normalną szerokość i stoją od prawej
     body = max(2, int(slot * 0.6))
+    start = cx1 - slot * n
     for i, r in enumerate(rows):
-        cx = cx0 + slot * (i + 0.5)
+        cx = start + slot * (i + 0.5)
         col = GREEN if r["c"] >= r["o"] else RED
         d.line((round(cx), yv(r["h"]), round(cx), yv(r["l"])), fill=col)
         top, bot = sorted((yv(r["o"]), yv(r["c"])))
