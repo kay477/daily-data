@@ -123,3 +123,9 @@ Wszystkie trzy obrazki generuje ten sam workflow co godzinę (`newsmap/screens.p
 
 - Na ekranie BRIEFING, w nagłówku między zakładkami a datą, urządzenie samo dopisuje stan baterii (%) i temperaturę w pokoju z wbudowanego czujnika SHT4x. Serwer rysuje tam tylko ikonki (`device_slot` w `newsmap/screens.py`); pozycje muszą się zgadzać z `BATT_X/BATT_Y/HOUSE_X` w firmware. Odczyt jest robiony przed włączeniem Wi-Fi, a liczby odświeżają się razem z ekranem.
 - Ostatnia aktualizacja przed ciszą nocną (domyślnie o 22:25) pobiera `nocturne.bin` – generatywną panoramę neonowego miasta, inną każdej nocy (ziarno = data, `newsmap/nocturne.py`). Rano pierwsza aktualizacja wraca do zwykłego ekranu.
+
+## Na żądanie: panorama i własne grafiki
+
+- **Przytrzymanie prawego przycisku (~2 s)** – nocna panorama od razu, o dowolnej porze.
+- **Przytrzymanie lewego przycisku (~2 s)** – kolejna własna grafika z folderu `grafika/` (instrukcja w `grafika/README.md`). Obrazki są przerabiane na 6 kolorów z ditheringiem (`newsmap/gallery.py`).
+- Dioda mrugnie dwa razy, gdy przytrzymanie zostało rozpoznane. Obraz zostaje do najbliższej aktualizacji o :25.

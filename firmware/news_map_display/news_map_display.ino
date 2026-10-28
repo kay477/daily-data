@@ -12,6 +12,8 @@
     środkowy  -> RYNKI     (rynki.bin)
     prawy     -> BRIEFING  (briefing.bin)
   Przycisk bieżącego ekranu wymusza jego odświeżenie. Dioda świeci, gdy urządzenie pracuje.
+  Przytrzymanie (ok. 2 s): prawy -> nocna panorama od razu, lewy -> kolejna własna grafika
+  z folderu grafika/ w repo (grafika_0.bin, grafika_1.bin, ...). Zostaje do najbliższej aktualizacji.
   Pierwsza aktualizacja po nocy (o 6:00) przełącza na MORNING_SCREEN (domyślnie briefing).
   Ostatnia aktualizacja przed ciszą nocną rysuje nocną panoramę miasta (nocturne.bin).
   Na briefingu urządzenie dopisuje w nagłówku stan baterii i temperaturę w pokoju (czujnik SHT4x).
@@ -84,6 +86,7 @@ RTC_DATA_ATTR uint32_t lastHash = 0;     // przetrwa deep sleep
 RTC_DATA_ATTR uint32_t failCount = 0;
 RTC_DATA_ATTR uint8_t screen = SCR_MAP;   // co jest teraz na ekranie
 RTC_DATA_ATTR bool sleptOverNight = false;
+RTC_DATA_ATTR uint8_t galleryIdx = 0;     // która własna grafika będzie następna
 
 int batteryPct = -1;      // odczyty z tego obudzenia (przed włączeniem Wi-Fi, żeby były dokładniejsze)
 float roomTemp = NAN;
@@ -94,7 +97,8 @@ bool connectWifi();
 bool syncTime();
 String fileUrl(const char* name);
 String screenUrl(uint8_t scr);
-bool download(uint8_t* buf, const String& url);
+bool download(uint8_t* buf, const String& url, int* httpCode = nullptr);
+bool heldLong(gpio_num_t pin);
 void drawFrame(const uint8_t* buf, bool overlay);
 int readBattery();
 bool readRoomTemp(float& t, float& rh);
@@ -193,7 +197,7 @@ String fileUrl(const char* name) {
 
 String screenUrl(uint8_t scr) { return fileUrl(SCREEN_FILE[scr]); }
 
-bool download(uint8_t* buf, const String& url) {
+bool download(uint8_t* buf, const String& url, int* httpCode) {
   WiFiClientSecure client;
   client.setInsecure();               // nie sprawdzamy certyfikatu – to tylko obrazek
   HTTPClient http;
@@ -202,6 +206,7 @@ bool download(uint8_t* buf, const String& url) {
   Serial.println(url);
   if (!http.begin(client, url)) return false;
   int code = http.GET();
+  if (httpCode) *httpCode = code;
   Serial.printf("HTTP %d, rozmiar %d\n", code, http.getSize());
   if (code != HTTP_CODE_OK) { http.end(); return false; }
 
@@ -348,6 +353,17 @@ void goToSleep(uint64_t seconds) {
   esp_deep_sleep_start();
 }
 
+// Czy przycisk, który obudził urządzenie, jest dalej trzymany (łącznie ok. 2 s od naciśnięcia)?
+bool heldLong(gpio_num_t pin) {
+  rtc_gpio_deinit(pin);
+  pinMode(pin, INPUT_PULLUP);
+  while (millis() < 1700) {  // ~0,3 s zajmuje sam start układu
+    if (digitalRead(pin) == HIGH) return false;
+    delay(20);
+  }
+  return true;
+}
+
 // Który przycisk obudził urządzenie -> który ekran. -1 = nie przycisk.
 int screenFromWakeup() {
   if (esp_sleep_get_wakeup_cause() != ESP_SLEEP_WAKEUP_EXT1) return -1;
@@ -367,7 +383,13 @@ void setup() {
   int pressed = screenFromWakeup();
   bool byButton = pressed >= 0;
   bool forceDraw = byButton;
-  if (byButton) {
+  // przytrzymanie: prawy = panorama, lewy = własna grafika (ekran "pod spodem" się nie zmienia)
+  int special = 0;  // 0 = zwykły ekran, 1 = panorama, 2 = grafika
+  if (pressed == SCR_BRIEF && heldLong(KEY0)) special = 1;
+  else if (pressed == SCR_MAP && heldLong(KEY2)) special = 2;
+  if (special) {
+    for (int i = 0; i < 2; i++) { digitalWrite(LED_PIN, HIGH); delay(120); digitalWrite(LED_PIN, LOW); delay(120); }
+  } else if (byButton) {
     screen = pressed;
   } else if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TIMER && sleptOverNight
              && MORNING_SCREEN >= 0 && MORNING_SCREEN < SCR_COUNT && screen != MORNING_SCREEN) {
@@ -394,16 +416,24 @@ void setup() {
   // Czy po tej aktualizacji idziemy spać na całą noc? Wtedy zamiast ekranu – nocna panorama.
   secondsToNextUpdate();
   bool nightNext = timeOk && sleptOverNight && !byButton;
-  String url = nightNext ? fileUrl("nocturne.bin") : screenUrl(screen);
+  String url = (nightNext || special == 1) ? fileUrl("nocturne.bin") : screenUrl(screen);
   if (nightNext) Serial.println("Ostatnia aktualizacja przed nocą – nocna panorama");
+  if (special == 2) url = fileUrl((String("grafika_") + galleryIdx + ".bin").c_str());
+  if (special) Serial.printf("Przytrzymanie: %s\n", special == 1 ? "panorama" : "grafika");
 
-  bool ok = wifi && download(buf, url);
+  int code = 0;
+  bool ok = wifi && download(buf, url, &code);
+  if (!ok && special == 2 && code == 404 && galleryIdx != 0) {  // koniec listy – od początku
+    galleryIdx = 0;
+    ok = download(buf, fileUrl("grafika_0.bin"), &code);
+  }
+  if (special == 2 && ok) galleryIdx++;
   if (ok) {
     failCount = 0;
     uint32_t h = fnv1a(buf, FRAME_BYTES);
     if (h != lastHash || forceDraw) {
       Serial.println("Nowy obrazek – rysuję (ok. 20 s)");
-      drawFrame(buf, !nightNext && screen == SCR_BRIEF);
+      drawFrame(buf, !nightNext && !special && screen == SCR_BRIEF);
       lastHash = h;
     } else {
       Serial.println("Bez zmian – nie odświeżam ekranu");
