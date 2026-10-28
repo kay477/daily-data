@@ -108,10 +108,24 @@ bool waitConnected(uint32_t ms) {
   return WiFi.status() == WL_CONNECTED;
 }
 
-bool visible(int n, const char* ssid) {
+// Porównanie nazw sieci odporne na wielkość liter, spacje i apostrofy
+// ("iPhone (Kajetan)" == "Iphone(Kajetan)" == "iPhone Kajetana" bez ’ itp.).
+String norm(const String& s) {
+  String o;
+  for (size_t i = 0; i < s.length(); i++) {
+    char c = s[i];
+    if (c == ' ' || c == '\'' || c == '(' || c == ')' || (uint8_t)c >= 0x80) continue;
+    o += (char)tolower(c);
+  }
+  return o;
+}
+
+// Zwraca dokładną nazwę widocznej sieci pasującej do nazwy z config.h ("" = nie widać).
+String visible(int n, const char* ssid) {
+  String want = norm(ssid);
   for (int i = 0; i < n; i++)
-    if (WiFi.SSID(i) == ssid) return true;
-  return false;
+    if (norm(WiFi.SSID(i)) == want) return WiFi.SSID(i);
+  return "";
 }
 
 // Skanuje okolicę i łączy się z pierwszą widoczną znaną siecią (dom, hotspot telefonu, eduroam...).
@@ -119,17 +133,21 @@ bool connectWifi() {
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
   int n = WiFi.scanNetworks();
-  Serial.printf("Wi-Fi: widzę %d sieci\n", n);
+  Serial.printf("Wi-Fi: widzę %d sieci:\n", n);
+  for (int i = 0; i < n && i < 15; i++)
+    Serial.printf("   %s  (%d dBm)\n", WiFi.SSID(i).c_str(), WiFi.RSSI(i));
   const char* ssids[3] = {WIFI_SSID, WIFI_SSID2, WIFI_SSID3};
   const char* passes[3] = {WIFI_PASS, WIFI_PASS2, WIFI_PASS3};
   for (int k = 0; k < 3; k++) {
-    if (!ssids[k][0] || (n > 0 && !visible(n, ssids[k]))) continue;
-    Serial.printf("Wi-Fi: łączę z %s\n", ssids[k]);
-    WiFi.begin(ssids[k], passes[k]);
+    if (!ssids[k][0]) continue;
+    String real = n > 0 ? visible(n, ssids[k]) : String(ssids[k]);
+    if (real.isEmpty()) { Serial.printf("Wi-Fi: nie widzę sieci %s\n", ssids[k]); continue; }
+    Serial.printf("Wi-Fi: łączę z %s\n", real.c_str());
+    WiFi.begin(real.c_str(), passes[k]);
     if (waitConnected(15000)) { Serial.println("Wi-Fi: OK"); return true; }
     WiFi.disconnect();
   }
-  if (EDUROAM_LOGIN[0] && (n <= 0 || visible(n, "eduroam"))) {
+  if (EDUROAM_LOGIN[0] && (n <= 0 || visible(n, "eduroam").length())) {
     Serial.println("Wi-Fi: łączę z eduroam");
     WiFi.begin("eduroam", WPA2_AUTH_PEAP, EDUROAM_LOGIN, EDUROAM_LOGIN, EDUROAM_PASS);
     if (waitConnected(20000)) { Serial.println("Wi-Fi: OK"); return true; }
