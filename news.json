@@ -1,0 +1,295 @@
+{
+ "generated_utc": "2026-10-31T18:45:00+00:00",
+ "baseline_days": 30,
+ "stories": [
+  {
+   "iso": "SN",
+   "name": "Senegal",
+   "text": "Holy Smokes - Looks Like Poland Might Be in the Middle of a Tusk-Orchestrated Coup UPDATE and MORE"
+  },
+  {
+   "iso": "AG",
+   "name": "Antigua i Barbuda",
+   "text": "King arrives in Antigua and Barbuda as slavery debate persists"
+  },
+  {
+   "iso": "PL",
+   "name": "Polska",
+   "text": "Holy Smokes - Looks Like Poland Might Be in the Middle of a Tusk-Orchestrated Coup UPDATE and MORE"
+  },
+  {
+   "iso": "GY",
+   "name": "Gujana",
+   "text": "King arrives in Antigua and Barbuda as slavery debate persists"
+  }
+ ],
+ "titles": {
+  "SN": [
+   "Holy Smokes - Looks Like Poland Might Be in the Middle of a Tusk-Orchestrated Coup UPDATE and MORE",
+   "Protestors clash with police outside Polish Constitutional Tribunal as court’s head removed in ‘coup d’état’",
+   "Visa and Senegal join forces to accelerate digital transformation and the development of digital payments",
+   "Three detained over incident outside Constitutional Tribunal building in Poland"
+  ],
+  "AG": [
+   "King arrives in Antigua and Barbuda as slavery debate persists",
+   "‘Reparations now’: King and Burnham face protests at Antigua Commonwealth summit",
+   "UK PM rejects slavery reparations despite Caribbean demands, open to formal apology",
+   "Judge orders Trump administration to cease threats to prosecute election officials"
+  ],
+  "PL": [
+   "Holy Smokes - Looks Like Poland Might Be in the Middle of a Tusk-Orchestrated Coup UPDATE and MORE",
+   "Police secure Poland’s Constitutional Tribunal as protests erupt over court chief’s suspension",
+   "Riot police deployed to Poland’s constitutional court after judge suspended",
+   "Emergency summit after huge"
+  ],
+  "GY": [
+   "King arrives in Antigua and Barbuda as slavery debate persists",
+   "King Charles Arrives In Guyana As Political Protest And Reparations Demands Shadow Visit - Dominican Republic Post – Caribbean News, Business, Travel & Culture",
+   "King Charles III urges countries to follow Guyana’s lead in protecting forests",
+   "Arrests clashes as mv barima protesters take to streets during kings visit"
+  ]
+ },
+ "markets": [
+  {
+   "label": "NASDAQ",
+   "price": 25437.0,
+   "change_pct": -2.86,
+   "source": "yahoo",
+   "fetched_utc": "2026-10-31T19:38:49+00:00"
+  },
+  {
+   "label": "S&P500",
+   "price": 7580.07,
+   "change_pct": -1.82,
+   "source": "yahoo",
+   "fetched_utc": "2026-10-31T19:38:49+00:00"
+  },
+  {
+   "label": "WIG20",
+   "price": 4180.88,
+   "change_pct": -2.4,
+   "source": "yahoo",
+   "fetched_utc": "2026-10-31T19:38:49+00:00"
+  },
+  {
+   "label": "CDPR",
+   "price": 257.5,
+   "change_pct": -4.74,
+   "source": "yahoo",
+   "fetched_utc": "2026-10-31T19:38:49+00:00"
+  }
+ ],
+ "markets_errors": [],
+ "scores": [
+  {
+   "iso": "SN",
+   "articles": 72,
+   "z": 4.52,
+   "ratio": 5.88,
+   "level": 2
+  },
+  {
+   "iso": "AG",
+   "articles": 69,
+   "z": 3.25,
+   "ratio": 12.46,
+   "level": 2
+  },
+  {
+   "iso": "PL",
+   "articles": 163,
+   "z": 3.21,
+   "ratio": 3.14,
+   "level": 2
+  },
+  {
+   "iso": "GY",
+   "articles": 62,
+   "z": 2.82,
+   "ratio": 3.21,
+   "level": 1
+  },
+  {
+   "iso": "US-AK",
+   "articles": 192,
+   "z": 2.66,
+   "ratio": 2.36,
+   "level": 1
+  },
+  {
+   "iso": "MA",
+   "articles": 68,
+   "z": 2.44,
+   "ratio": 1.93,
+   "level": 1
+  },
+  {
+   "iso": "BY",
+   "articles": 49,
+   "z": 2.37,
+   "ratio": 3.22,
+   "level": 1
+  },
+  {
+   "iso": "KP",
+   "articles": 103,
+   "z": 2.22,
+   "ratio": 2.71,
+   "level": 1
+  },
+  {
+   "iso": "EH",
+   "articles": 23,
+   "z": 2.83,
+   "ratio": 8.51,
+   "level": 0
+  },
+  {
+   "iso": "BT",
+   "articles": 21,
+   "z": 2.64,
+   "ratio": 4.45,
+   "level": 0
+  },
+  {
+   "iso": "DZ",
+   "articles": 29,
+   "z": 2.21,
+   "ratio": 2.19,
+   "level": 0
+  },
+  {
+   "iso": "CS",
+   "articles": 2,
+   "z": 2.13,
+   "ratio": 3.33,
+   "level": 0
+  },
+  {
+   "iso": "TT",
+   "articles": 25,
+   "z": 2.13,
+   "ratio": 1.77,
+   "level": 0
+  },
+  {
+   "iso": "TC",
+   "articles": 1,
+   "z": 2.08,
+   "ratio": 2.24,
+   "level": 0
+  },
+  {
+   "iso": "BI",
+   "articles": 8,
+   "z": 1.84,
+   "ratio": 2.07,
+   "level": 0
+  },
+  {
+   "iso": "YT",
+   "articles": 1,
+   "z": 1.84,
+   "ratio": 2.29,
+   "level": 0
+  },
+  {
+   "iso": "ML",
+   "articles": 19,
+   "z": 1.79,
+   "ratio": 2.38,
+   "level": 0
+  },
+  {
+   "iso": "MR",
+   "articles": 5,
+   "z": 1.71,
+   "ratio": 2.24,
+   "level": 0
+  },
+  {
+   "iso": "TR",
+   "articles": 189,
+   "z": 1.69,
+   "ratio": 1.51,
+   "level": 0
+  },
+  {
+   "iso": "QA",
+   "articles": 115,
+   "z": 1.67,
+   "ratio": 1.71,
+   "level": 0
+  },
+  {
+   "iso": "LC",
+   "articles": 9,
+   "z": 1.65,
+   "ratio": 3.64,
+   "level": 0
+  },
+  {
+   "iso": "DM",
+   "articles": 2,
+   "z": 1.64,
+   "ratio": 2.86,
+   "level": 0
+  },
+  {
+   "iso": "US-NH",
+   "articles": 43,
+   "z": 1.63,
+   "ratio": 1.52,
+   "level": 0
+  },
+  {
+   "iso": "US-KS",
+   "articles": 121,
+   "z": 1.57,
+   "ratio": 1.73,
+   "level": 0
+  },
+  {
+   "iso": "SJ",
+   "articles": 2,
+   "z": 1.57,
+   "ratio": 2.27,
+   "level": 0
+  },
+  {
+   "iso": "MF",
+   "articles": 1,
+   "z": 1.55,
+   "ratio": 2.01,
+   "level": 0
+  },
+  {
+   "iso": "FO",
+   "articles": 1,
+   "z": 1.54,
+   "ratio": 1.51,
+   "level": 0
+  },
+  {
+   "iso": "US-IA",
+   "articles": 139,
+   "z": 1.45,
+   "ratio": 1.39,
+   "level": 0
+  },
+  {
+   "iso": "US-MI",
+   "articles": 239,
+   "z": 1.39,
+   "ratio": 1.42,
+   "level": 0
+  },
+  {
+   "iso": "US-ND",
+   "articles": 34,
+   "z": 1.39,
+   "ratio": 1.46,
+   "level": 0
+  }
+ ]
+}
