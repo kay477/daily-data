@@ -1,0 +1,295 @@
+{
+ "generated_utc": "2026-11-07T18:45:00+00:00",
+ "baseline_days": 30,
+ "stories": [
+  {
+   "iso": "PY",
+   "name": "Paragwaj",
+   "text": "Paraguay President Pena impeached, placed under house arrest in bank collapse scandal"
+  },
+  {
+   "iso": "PR",
+   "name": "Portoryko",
+   "text": "Miss Universe 2026: Puerto Rico welcomes the contestants as they arrive for pageant week"
+  },
+  {
+   "iso": "CL",
+   "name": "Chile",
+   "text": "Chile Court Orders Enel to Pay 128,000"
+  },
+  {
+   "iso": "UY",
+   "name": "Urugwaj",
+   "text": "Pope Leo begins a 12-day, 3-country South America tour after his cancer surgery"
+  }
+ ],
+ "titles": {
+  "PY": [
+   "Paraguay President Pena impeached, placed under house arrest in bank collapse scandal",
+   "Paraguay's Ex-Central Bank Chief Surrenders",
+   "Paraguay Senate votes to impeach Prez Santiago Pena over bank collapse; VP sworn in",
+   "Paraguay’s Santiago Pena under arrest, new president Pedro Alliana sworn in"
+  ],
+  "PR": [
+   "Miss Universe 2026: Puerto Rico welcomes the contestants as they arrive for pageant week",
+   "Puerto Rico Leaders Urge Deportation Cuts",
+   "US hits anti-arcraft device on Iran's Queshm Island in minor strikes, Donald Trump says",
+   "Zohran Mamdani, Kathy Hochul travel to Puerto Rico for annual conference"
+  ],
+  "CL": [
+   "Chile Court Orders Enel to Pay 128,000",
+   "Paraguayan president pena removed from office arrested as bank collapse triggers political crisis article",
+   "Doron Perez draws on personal loss to call for Jewish unity",
+   "Paraguay President Pea impeached, placed under house arrest in bank collapse scandal"
+  ],
+  "UY": [
+   "Pope Leo begins a 12-day, 3-country South America tour after his cancer surgery",
+   "Pope urges faithful in Uruguay to build bridges at first Mass in South America",
+   "Crowds cheer Pope as Leo arrives in Uruguay for start of South American tour",
+   "'Happy to be back': Pope Leo begins South American tour"
+  ]
+ },
+ "markets": [
+  {
+   "label": "NASDAQ",
+   "price": 24579.42,
+   "change_pct": 1.09,
+   "source": "yahoo",
+   "fetched_utc": "2026-11-07T18:42:52+00:00"
+  },
+  {
+   "label": "S&P500",
+   "price": 7376.86,
+   "change_pct": 0.31,
+   "source": "yahoo",
+   "fetched_utc": "2026-11-07T18:42:52+00:00"
+  },
+  {
+   "label": "WIG20",
+   "price": 4131.37,
+   "change_pct": -1.85,
+   "source": "yahoo",
+   "fetched_utc": "2026-11-07T18:42:52+00:00"
+  },
+  {
+   "label": "CDPR",
+   "price": 266.9,
+   "change_pct": 1.64,
+   "source": "yahoo",
+   "fetched_utc": "2026-11-07T18:42:52+00:00"
+  }
+ ],
+ "markets_errors": [],
+ "scores": [
+  {
+   "iso": "PY",
+   "articles": 90,
+   "z": 3.88,
+   "ratio": 19.64,
+   "level": 2
+  },
+  {
+   "iso": "PR",
+   "articles": 30,
+   "z": 3.05,
+   "ratio": 2.51,
+   "level": 1
+  },
+  {
+   "iso": "CL",
+   "articles": 65,
+   "z": 2.94,
+   "ratio": 2.18,
+   "level": 1
+  },
+  {
+   "iso": "UY",
+   "articles": 69,
+   "z": 2.5,
+   "ratio": 5.69,
+   "level": 1
+  },
+  {
+   "iso": "PE",
+   "articles": 65,
+   "z": 2.18,
+   "ratio": 1.95,
+   "level": 1
+  },
+  {
+   "iso": "PL",
+   "articles": 140,
+   "z": 2.13,
+   "ratio": 2.26,
+   "level": 1
+  },
+  {
+   "iso": "HK",
+   "articles": 56,
+   "z": 2.04,
+   "ratio": 2.12,
+   "level": 1
+  },
+  {
+   "iso": "MS",
+   "articles": 3,
+   "z": 4.02,
+   "ratio": 4.51,
+   "level": 0
+  },
+  {
+   "iso": "CX",
+   "articles": 3,
+   "z": 3.64,
+   "ratio": 4.05,
+   "level": 0
+  },
+  {
+   "iso": "IO",
+   "articles": 1,
+   "z": 2.3,
+   "ratio": 2.29,
+   "level": 0
+  },
+  {
+   "iso": "AN",
+   "articles": 1,
+   "z": 2.18,
+   "ratio": 2.26,
+   "level": 0
+  },
+  {
+   "iso": "US-PR",
+   "articles": 8,
+   "z": 1.96,
+   "ratio": 2.17,
+   "level": 0
+  },
+  {
+   "iso": "US-MS",
+   "articles": 102,
+   "z": 1.95,
+   "ratio": 2.16,
+   "level": 0
+  },
+  {
+   "iso": "US-CO",
+   "articles": 183,
+   "z": 1.87,
+   "ratio": 1.65,
+   "level": 0
+  },
+  {
+   "iso": "VG",
+   "articles": 3,
+   "z": 1.85,
+   "ratio": 2.83,
+   "level": 0
+  },
+  {
+   "iso": "NI",
+   "articles": 12,
+   "z": 1.84,
+   "ratio": 2.37,
+   "level": 0
+  },
+  {
+   "iso": "HN",
+   "articles": 10,
+   "z": 1.79,
+   "ratio": 1.6,
+   "level": 0
+  },
+  {
+   "iso": "GI",
+   "articles": 8,
+   "z": 1.66,
+   "ratio": 2.58,
+   "level": 0
+  },
+  {
+   "iso": "US-ND",
+   "articles": 39,
+   "z": 1.66,
+   "ratio": 1.62,
+   "level": 0
+  },
+  {
+   "iso": "US-FL",
+   "articles": 527,
+   "z": 1.65,
+   "ratio": 1.51,
+   "level": 0
+  },
+  {
+   "iso": "GN",
+   "articles": 13,
+   "z": 1.6,
+   "ratio": 2.0,
+   "level": 0
+  },
+  {
+   "iso": "GL",
+   "articles": 23,
+   "z": 1.59,
+   "ratio": 2.59,
+   "level": 0
+  },
+  {
+   "iso": "IS",
+   "articles": 16,
+   "z": 1.57,
+   "ratio": 1.43,
+   "level": 0
+  },
+  {
+   "iso": "US-HI",
+   "articles": 76,
+   "z": 1.54,
+   "ratio": 1.44,
+   "level": 0
+  },
+  {
+   "iso": "SV",
+   "articles": 30,
+   "z": 1.53,
+   "ratio": 1.87,
+   "level": 0
+  },
+  {
+   "iso": "CV",
+   "articles": 2,
+   "z": 1.52,
+   "ratio": 2.12,
+   "level": 0
+  },
+  {
+   "iso": "GA",
+   "articles": 8,
+   "z": 1.5,
+   "ratio": 2.61,
+   "level": 0
+  },
+  {
+   "iso": "MQ",
+   "articles": 1,
+   "z": 1.49,
+   "ratio": 2.24,
+   "level": 0
+  },
+  {
+   "iso": "MF",
+   "articles": 1,
+   "z": 1.49,
+   "ratio": 2.02,
+   "level": 0
+  },
+  {
+   "iso": "US-WV",
+   "articles": 56,
+   "z": 1.48,
+   "ratio": 1.51,
+   "level": 0
+  }
+ ]
+}
