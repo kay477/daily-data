@@ -1,0 +1,295 @@
+{
+ "generated_utc": "2026-11-14T20:45:00+00:00",
+ "baseline_days": 30,
+ "stories": [
+  {
+   "iso": "US-LA",
+   "name": "Luizjana (USA)",
+   "text": "‘Miracle on the Mississippi’: No fatalities after tanker crashes into river cruiser near Port of New Orleans"
+  },
+  {
+   "iso": "TT",
+   "name": "Trynidad i Tobago",
+   "text": "Trinidad Opposition Demands Telecom Probe"
+  },
+  {
+   "iso": "KH",
+   "name": "Kambodża",
+   "text": "Cambodian PM praises UNESCO support for cultural heritage preservation"
+  },
+  {
+   "iso": "US-CO",
+   "name": "Kolorado (USA)",
+   "text": "With shifting Iran rhetoric following US elections, Trump leaves Mideast in limbo about path ahead"
+  }
+ ],
+ "titles": {
+  "US-LA": [
+   "‘Miracle on the Mississippi’: No fatalities after tanker crashes into river cruiser near Port of New Orleans",
+   "New Orleans cruise ship collision: All accounted for, 32 hospitalized",
+   "Tanker Crashes Into Ship Near New Orleans, Sparking 'Miraculous' Rescue Ops; 0 Fatalities (UPDATE)",
+   "How Boca Chica Village became Starbase."
+  ],
+  "TT": [
+   "Trinidad Opposition Demands Telecom Probe",
+   "FAMILY’S HOPES DASHEDBody of 38-year-old sanitation worker found at sea as search continues for five other Chaguaramas boating tragedy victims",
+   "Last missing body found in Chaguaramas boating tragedy",
+   "Final body recovered in search for six missing after Trinidad pleasure craft collision"
+  ],
+  "KH": [
+   "Cambodian PM praises UNESCO support for cultural heritage preservation",
+   "French-speaking nations hold a summit in Cambodia as a conflict in Africa threatens a rift",
+   "CCC, and APF Hosts Reception of Francophone Entrepreneurs Forum 2026",
+   "Sunday, November 15, 2026"
+  ],
+  "US-CO": [
+   "With shifting Iran rhetoric following US elections, Trump leaves Mideast in limbo about path ahead",
+   "Colorado Court of Appeals upholds guilty conviction of Vallecito man who killed his son",
+   "JonBenét Ramsey Murder Case DNA Evidence Being Re-Tested With New Technology — Three Decades After Child Beauty Queen Was Killed",
+   "Nation’s top Democrats gather in Denver to chart course for future after midterm victories"
+  ]
+ },
+ "markets": [
+  {
+   "label": "NASDAQ",
+   "price": 25136.27,
+   "change_pct": -0.91,
+   "source": "yahoo",
+   "fetched_utc": "2026-11-14T20:38:42+00:00"
+  },
+  {
+   "label": "S&P500",
+   "price": 7561.67,
+   "change_pct": -0.4,
+   "source": "yahoo",
+   "fetched_utc": "2026-11-14T20:38:42+00:00"
+  },
+  {
+   "label": "WIG20",
+   "price": 4298.46,
+   "change_pct": 0.44,
+   "source": "yahoo",
+   "fetched_utc": "2026-11-14T20:38:42+00:00"
+  },
+  {
+   "label": "CDPR",
+   "price": 278.4,
+   "change_pct": 0.07,
+   "source": "yahoo",
+   "fetched_utc": "2026-11-14T20:38:42+00:00"
+  }
+ ],
+ "markets_errors": [],
+ "scores": [
+  {
+   "iso": "US-LA",
+   "articles": 215,
+   "z": 4.68,
+   "ratio": 3.12,
+   "level": 2
+  },
+  {
+   "iso": "TT",
+   "articles": 46,
+   "z": 3.07,
+   "ratio": 3.12,
+   "level": 1
+  },
+  {
+   "iso": "KH",
+   "articles": 54,
+   "z": 2.94,
+   "ratio": 2.87,
+   "level": 1
+  },
+  {
+   "iso": "US-CO",
+   "articles": 217,
+   "z": 2.53,
+   "ratio": 1.95,
+   "level": 1
+  },
+  {
+   "iso": "US-MS",
+   "articles": 142,
+   "z": 2.49,
+   "ratio": 2.42,
+   "level": 1
+  },
+  {
+   "iso": "PE",
+   "articles": 81,
+   "z": 2.31,
+   "ratio": 2.46,
+   "level": 1
+  },
+  {
+   "iso": "US-HI",
+   "articles": 85,
+   "z": 2.11,
+   "ratio": 1.64,
+   "level": 1
+  },
+  {
+   "iso": "MH",
+   "articles": 18,
+   "z": 3.41,
+   "ratio": 7.39,
+   "level": 0
+  },
+  {
+   "iso": "MF",
+   "articles": 2,
+   "z": 2.28,
+   "ratio": 3.81,
+   "level": 0
+  },
+  {
+   "iso": "MT",
+   "articles": 15,
+   "z": 2.27,
+   "ratio": 2.18,
+   "level": 0
+  },
+  {
+   "iso": "IO",
+   "articles": 1,
+   "z": 2.2,
+   "ratio": 2.89,
+   "level": 0
+  },
+  {
+   "iso": "HN",
+   "articles": 16,
+   "z": 2.16,
+   "ratio": 2.4,
+   "level": 0
+  },
+  {
+   "iso": "KM",
+   "articles": 2,
+   "z": 2.1,
+   "ratio": 2.37,
+   "level": 0
+  },
+  {
+   "iso": "SS",
+   "articles": 28,
+   "z": 2.09,
+   "ratio": 1.73,
+   "level": 0
+  },
+  {
+   "iso": "YT",
+   "articles": 1,
+   "z": 2.01,
+   "ratio": 2.54,
+   "level": 0
+  },
+  {
+   "iso": "SC",
+   "articles": 12,
+   "z": 1.94,
+   "ratio": 2.75,
+   "level": 0
+  },
+  {
+   "iso": "US-ND",
+   "articles": 37,
+   "z": 1.86,
+   "ratio": 1.59,
+   "level": 0
+  },
+  {
+   "iso": "TV",
+   "articles": 4,
+   "z": 1.71,
+   "ratio": 2.62,
+   "level": 0
+  },
+  {
+   "iso": "US-IL",
+   "articles": 276,
+   "z": 1.64,
+   "ratio": 1.47,
+   "level": 0
+  },
+  {
+   "iso": "CN",
+   "articles": 801,
+   "z": 1.6,
+   "ratio": 1.6,
+   "level": 0
+  },
+  {
+   "iso": "CR",
+   "articles": 14,
+   "z": 1.57,
+   "ratio": 1.69,
+   "level": 0
+  },
+  {
+   "iso": "SI",
+   "articles": 6,
+   "z": 1.53,
+   "ratio": 2.21,
+   "level": 0
+  },
+  {
+   "iso": "US-WY",
+   "articles": 46,
+   "z": 1.52,
+   "ratio": 1.44,
+   "level": 0
+  },
+  {
+   "iso": "TG",
+   "articles": 5,
+   "z": 1.45,
+   "ratio": 1.56,
+   "level": 0
+  },
+  {
+   "iso": "PH",
+   "articles": 282,
+   "z": 1.43,
+   "ratio": 1.36,
+   "level": 0
+  },
+  {
+   "iso": "TL",
+   "articles": 5,
+   "z": 1.42,
+   "ratio": 1.92,
+   "level": 0
+  },
+  {
+   "iso": "PW",
+   "articles": 4,
+   "z": 1.4,
+   "ratio": 1.97,
+   "level": 0
+  },
+  {
+   "iso": "KN",
+   "articles": 1,
+   "z": 1.37,
+   "ratio": 2.41,
+   "level": 0
+  },
+  {
+   "iso": "AD",
+   "articles": 1,
+   "z": 1.36,
+   "ratio": 1.56,
+   "level": 0
+  },
+  {
+   "iso": "BO",
+   "articles": 11,
+   "z": 1.36,
+   "ratio": 2.0,
+   "level": 0
+  }
+ ]
+}
