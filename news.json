@@ -1,0 +1,295 @@
+{
+ "generated_utc": "2026-11-21T13:00:00+00:00",
+ "baseline_days": 30,
+ "stories": [
+  {
+   "iso": "PT",
+   "name": "Portugalia",
+   "text": "The three-times-weekly service starts on March 30, 2027, using a 171-seat Airbus A321LR, with round-trip fares advertised from €529."
+  },
+  {
+   "iso": "DK",
+   "name": "Dania",
+   "text": "Absenteeism Among Public School Students Is Rising"
+  },
+  {
+   "iso": "BE",
+   "name": "Belgia",
+   "text": "Burnham says EU and UK will spend a year ‘brainstorming’ future ties"
+  },
+  {
+   "iso": "SV",
+   "name": "Salwador",
+   "text": "Nayib Bukele Seeks Third Term as President of El Salvador"
+  }
+ ],
+ "titles": {
+  "PT": [
+   "The three-times-weekly service starts on March 30, 2027, using a 171-seat Airbus A321LR, with round-trip fares advertised from €529.",
+   "The Ocean Race Summit Matosinhos-Porto: United to drive Ocean regeneration",
+   "Portugal proposes increase in meal allowance for civil servants",
+   "India, Portugal review bilateral ties; agree to finalise five-year roadmap for 2027-2032"
+  ],
+  "DK": [
+   "Absenteeism Among Public School Students Is Rising",
+   "Denmark will expel Russian diplomat over alleged assassination plot",
+   "For 25 years, José van Dijck has watched big tech tighten its grip on Europe: Now, she has a word of warning for Denmark",
+   "Denmark accuses Russia of plotting to kill American-Ukrainian rapper on its soil"
+  ],
+  "BE": [
+   "Burnham says EU and UK will spend a year ‘brainstorming’ future ties",
+   "JASON GROVES: How naive Andy Burnham walked straight into the EU trap",
+   "'A good day for Britain': Burnham hails UK-EU deal a 'win-win', but row over tuition fees rolls on",
+   "From Shenzhen to Brussels: A world reshaped by shifting alliances"
+  ],
+  "SV": [
+   "Nayib Bukele Seeks Third Term as President of El Salvador",
+   "Retired jail guard faces charges of threatening to kill ex’s two children",
+   "Chaos among the five armed forces operating in Haiti increases risk to the civilian population: ‘It’s an orchestra without a conductor’",
+   "Haiti reaches deal with el salvador to build three new prisons"
+  ]
+ },
+ "markets": [
+  {
+   "label": "NASDAQ",
+   "price": 22617.73,
+   "change_pct": -5.28,
+   "source": "yahoo",
+   "fetched_utc": "2026-11-21T12:54:20+00:00"
+  },
+  {
+   "label": "S&P500",
+   "price": 6910.39,
+   "change_pct": -3.7,
+   "source": "yahoo",
+   "fetched_utc": "2026-11-21T12:54:20+00:00"
+  },
+  {
+   "label": "WIG20",
+   "price": 4016.3,
+   "change_pct": -4.48,
+   "source": "yahoo",
+   "fetched_utc": "2026-11-21T12:54:20+00:00"
+  },
+  {
+   "label": "CDPR",
+   "price": 257.3,
+   "change_pct": -5.4,
+   "source": "yahoo",
+   "fetched_utc": "2026-11-21T12:54:20+00:00"
+  }
+ ],
+ "markets_errors": [],
+ "scores": [
+  {
+   "iso": "PT",
+   "articles": 94,
+   "z": 2.82,
+   "ratio": 2.04,
+   "level": 1
+  },
+  {
+   "iso": "DK",
+   "articles": 82,
+   "z": 2.13,
+   "ratio": 1.62,
+   "level": 1
+  },
+  {
+   "iso": "AS",
+   "articles": 11,
+   "z": 2.99,
+   "ratio": 3.9,
+   "level": 0
+  },
+  {
+   "iso": "IM",
+   "articles": 1,
+   "z": 2.35,
+   "ratio": 2.57,
+   "level": 0
+  },
+  {
+   "iso": "MT",
+   "articles": 29,
+   "z": 2.07,
+   "ratio": 3.63,
+   "level": 0
+  },
+  {
+   "iso": "BE",
+   "articles": 150,
+   "z": 1.95,
+   "ratio": 1.59,
+   "level": 0
+  },
+  {
+   "iso": "SI",
+   "articles": 12,
+   "z": 1.91,
+   "ratio": 2.53,
+   "level": 0
+  },
+  {
+   "iso": "MF",
+   "articles": 2,
+   "z": 1.76,
+   "ratio": 2.36,
+   "level": 0
+  },
+  {
+   "iso": "LS",
+   "articles": 16,
+   "z": 1.7,
+   "ratio": 3.51,
+   "level": 0
+  },
+  {
+   "iso": "CR",
+   "articles": 19,
+   "z": 1.64,
+   "ratio": 1.78,
+   "level": 0
+  },
+  {
+   "iso": "SV",
+   "articles": 45,
+   "z": 1.62,
+   "ratio": 1.75,
+   "level": 0
+  },
+  {
+   "iso": "YT",
+   "articles": 1,
+   "z": 1.61,
+   "ratio": 2.06,
+   "level": 0
+  },
+  {
+   "iso": "US-CT",
+   "articles": 90,
+   "z": 1.58,
+   "ratio": 1.37,
+   "level": 0
+  },
+  {
+   "iso": "BD",
+   "articles": 160,
+   "z": 1.54,
+   "ratio": 1.64,
+   "level": 0
+  },
+  {
+   "iso": "PL",
+   "articles": 189,
+   "z": 1.54,
+   "ratio": 2.26,
+   "level": 0
+  },
+  {
+   "iso": "FO",
+   "articles": 1,
+   "z": 1.53,
+   "ratio": 1.7,
+   "level": 0
+  },
+  {
+   "iso": "GM",
+   "articles": 38,
+   "z": 1.45,
+   "ratio": 2.78,
+   "level": 0
+  },
+  {
+   "iso": "PA",
+   "articles": 28,
+   "z": 1.43,
+   "ratio": 1.87,
+   "level": 0
+  },
+  {
+   "iso": "AO",
+   "articles": 13,
+   "z": 1.42,
+   "ratio": 1.66,
+   "level": 0
+  },
+  {
+   "iso": "DM",
+   "articles": 4,
+   "z": 1.42,
+   "ratio": 3.1,
+   "level": 0
+  },
+  {
+   "iso": "TT",
+   "articles": 35,
+   "z": 1.4,
+   "ratio": 1.94,
+   "level": 0
+  },
+  {
+   "iso": "EE",
+   "articles": 28,
+   "z": 1.36,
+   "ratio": 2.34,
+   "level": 0
+  },
+  {
+   "iso": "IO",
+   "articles": 1,
+   "z": 1.32,
+   "ratio": 2.53,
+   "level": 0
+  },
+  {
+   "iso": "SM",
+   "articles": 1,
+   "z": 1.26,
+   "ratio": 1.65,
+   "level": 0
+  },
+  {
+   "iso": "US-WI",
+   "articles": 147,
+   "z": 1.25,
+   "ratio": 1.35,
+   "level": 0
+  },
+  {
+   "iso": "MM",
+   "articles": 13,
+   "z": 1.25,
+   "ratio": 1.66,
+   "level": 0
+  },
+  {
+   "iso": "TN",
+   "articles": 12,
+   "z": 1.24,
+   "ratio": 1.52,
+   "level": 0
+  },
+  {
+   "iso": "XK",
+   "articles": 8,
+   "z": 1.22,
+   "ratio": 1.54,
+   "level": 0
+  },
+  {
+   "iso": "UA",
+   "articles": 549,
+   "z": 1.18,
+   "ratio": 1.37,
+   "level": 0
+  },
+  {
+   "iso": "TM",
+   "articles": 21,
+   "z": 1.15,
+   "ratio": 1.58,
+   "level": 0
+  }
+ ]
+}

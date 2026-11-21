@@ -1,0 +1,30 @@
+{
+ "NASDAQ": {
+  "label": "NASDAQ",
+  "price": 22617.73,
+  "change_pct": -5.28,
+  "source": "yahoo",
+  "fetched_utc": "2026-11-21T12:54:20+00:00"
+ },
+ "S&P500": {
+  "label": "S&P500",
+  "price": 6910.39,
+  "change_pct": -3.7,
+  "source": "yahoo",
+  "fetched_utc": "2026-11-21T12:54:20+00:00"
+ },
+ "CDPR": {
+  "label": "CDPR",
+  "price": 257.3,
+  "change_pct": -5.4,
+  "source": "yahoo",
+  "fetched_utc": "2026-11-21T12:54:20+00:00"
+ },
+ "WIG20": {
+  "label": "WIG20",
+  "price": 4016.3,
+  "change_pct": -4.48,
+  "source": "yahoo",
+  "fetched_utc": "2026-11-21T12:54:20+00:00"
+ }
+}
