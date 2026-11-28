@@ -1,0 +1,295 @@
+{
+ "generated_utc": "2026-11-28T13:30:00+00:00",
+ "baseline_days": 30,
+ "stories": [
+  {
+   "iso": "CR",
+   "name": "Kostaryka",
+   "text": "UN rapporteur Albanese in limbo at airport after being denied entry to Costa Rica"
+  },
+  {
+   "iso": "KW",
+   "name": "Kuwejt",
+   "text": "Stronger Defense Ties Will Benefit Both NATO And Gulf - Analysis"
+  },
+  {
+   "iso": "UG",
+   "name": "Uganda",
+   "text": "From logs to ‘Made in Uganda’"
+  },
+  {
+   "iso": "ZW",
+   "name": "Zimbabwe",
+   "text": "Zimbabwe Prophet Angel Hauled Out of His Church in Handcuffs"
+  }
+ ],
+ "titles": {
+  "CR": [
+   "UN rapporteur Albanese in limbo at airport after being denied entry to Costa Rica",
+   "Francesca Albanese spends second night at Costa Rica airport after entry denied",
+   "UN Watch Backs Costa Rica Ban on Francesca Albanese",
+   "Costa Rica bars UN special rapporteur on Palestinian territories from entering country over ‘links to terrorist acts’"
+  ],
+  "KW": [
+   "Stronger Defense Ties Will Benefit Both NATO And Gulf - Analysis",
+   "Iranian Analyst Accuses Ukraine of ‘False Flag’ Attack on Kuwait",
+   "Italians killed in Kuwait: Why is Iran denying responsibility?",
+   "Pakistan's Envoy to Kuwait visits injured Pakistani national in hospital"
+  ],
+  "UG": [
+   "From logs to ‘Made in Uganda’",
+   "Uganda to withdraw troops from DR Congo's Lubero town amid diplomatic row",
+   "Uganda: Museveni Receives Letters of Credence From Seven Newly Appointed Diplomats",
+   "President museveni to award south africas ramaphosa for promoting ugandas ankole cattle"
+  ],
+  "ZW": [
+   "Zimbabwe Prophet Angel Hauled Out of His Church in Handcuffs",
+   "Kenya’s Ruto Urges End to Zimbabwe Sanctions",
+   "Christian social worker wins major court battle after losing job over biblical beliefs",
+   "Original Benjamin Banks violin to be featured at Salisbury chamber concert"
+  ]
+ },
+ "markets": [
+  {
+   "label": "NASDAQ",
+   "price": 24129.5,
+   "change_pct": 2.31,
+   "source": "yahoo",
+   "fetched_utc": "2026-11-28T13:35:14+00:00"
+  },
+  {
+   "label": "S&P500",
+   "price": 7297.49,
+   "change_pct": 1.6,
+   "source": "yahoo",
+   "fetched_utc": "2026-11-28T13:35:14+00:00"
+  },
+  {
+   "label": "WIG20",
+   "price": 4090.19,
+   "change_pct": 1.15,
+   "source": "yahoo",
+   "fetched_utc": "2026-11-28T13:35:14+00:00"
+  },
+  {
+   "label": "CDPR",
+   "price": 276.3,
+   "change_pct": -0.47,
+   "source": "yahoo",
+   "fetched_utc": "2026-11-28T13:35:14+00:00"
+  }
+ ],
+ "markets_errors": [],
+ "scores": [
+  {
+   "iso": "CR",
+   "articles": 71,
+   "z": 4.17,
+   "ratio": 7.68,
+   "level": 2
+  },
+  {
+   "iso": "KW",
+   "articles": 59,
+   "z": 2.19,
+   "ratio": 3.86,
+   "level": 1
+  },
+  {
+   "iso": "GW",
+   "articles": 8,
+   "z": 2.61,
+   "ratio": 4.81,
+   "level": 0
+  },
+  {
+   "iso": "GN",
+   "articles": 26,
+   "z": 2.58,
+   "ratio": 3.81,
+   "level": 0
+  },
+  {
+   "iso": "PM",
+   "articles": 1,
+   "z": 2.49,
+   "ratio": 2.89,
+   "level": 0
+  },
+  {
+   "iso": "IO",
+   "articles": 2,
+   "z": 2.19,
+   "ratio": 3.49,
+   "level": 0
+  },
+  {
+   "iso": "UG",
+   "articles": 87,
+   "z": 1.91,
+   "ratio": 1.58,
+   "level": 0
+  },
+  {
+   "iso": "BB",
+   "articles": 22,
+   "z": 1.84,
+   "ratio": 2.03,
+   "level": 0
+  },
+  {
+   "iso": "ZW",
+   "articles": 56,
+   "z": 1.78,
+   "ratio": 1.56,
+   "level": 0
+  },
+  {
+   "iso": "MR",
+   "articles": 7,
+   "z": 1.76,
+   "ratio": 3.17,
+   "level": 0
+  },
+  {
+   "iso": "CA",
+   "articles": 840,
+   "z": 1.73,
+   "ratio": 1.5,
+   "level": 0
+  },
+  {
+   "iso": "MQ",
+   "articles": 1,
+   "z": 1.58,
+   "ratio": 1.94,
+   "level": 0
+  },
+  {
+   "iso": "MV",
+   "articles": 12,
+   "z": 1.54,
+   "ratio": 2.26,
+   "level": 0
+  },
+  {
+   "iso": "GF",
+   "articles": 1,
+   "z": 1.5,
+   "ratio": 1.92,
+   "level": 0
+  },
+  {
+   "iso": "DZ",
+   "articles": 21,
+   "z": 1.5,
+   "ratio": 1.82,
+   "level": 0
+  },
+  {
+   "iso": "LV",
+   "articles": 22,
+   "z": 1.49,
+   "ratio": 2.39,
+   "level": 0
+  },
+  {
+   "iso": "LY",
+   "articles": 55,
+   "z": 1.49,
+   "ratio": 4.03,
+   "level": 0
+  },
+  {
+   "iso": "BA",
+   "articles": 6,
+   "z": 1.4,
+   "ratio": 2.22,
+   "level": 0
+  },
+  {
+   "iso": "SD",
+   "articles": 52,
+   "z": 1.36,
+   "ratio": 1.42,
+   "level": 0
+  },
+  {
+   "iso": "SE",
+   "articles": 52,
+   "z": 1.29,
+   "ratio": 1.36,
+   "level": 0
+  },
+  {
+   "iso": "MW",
+   "articles": 43,
+   "z": 1.29,
+   "ratio": 1.36,
+   "level": 0
+  },
+  {
+   "iso": "US-NE",
+   "articles": 48,
+   "z": 1.27,
+   "ratio": 1.32,
+   "level": 0
+  },
+  {
+   "iso": "AM",
+   "articles": 70,
+   "z": 1.27,
+   "ratio": 1.54,
+   "level": 0
+  },
+  {
+   "iso": "AF",
+   "articles": 80,
+   "z": 1.25,
+   "ratio": 1.36,
+   "level": 0
+  },
+  {
+   "iso": "PK",
+   "articles": 327,
+   "z": 1.25,
+   "ratio": 1.41,
+   "level": 0
+  },
+  {
+   "iso": "SA",
+   "articles": 183,
+   "z": 1.24,
+   "ratio": 1.37,
+   "level": 0
+  },
+  {
+   "iso": "VG",
+   "articles": 2,
+   "z": 1.24,
+   "ratio": 2.26,
+   "level": 0
+  },
+  {
+   "iso": "ES",
+   "articles": 188,
+   "z": 1.21,
+   "ratio": 1.42,
+   "level": 0
+  },
+  {
+   "iso": "BT",
+   "articles": 12,
+   "z": 1.19,
+   "ratio": 2.32,
+   "level": 0
+  },
+  {
+   "iso": "IT",
+   "articles": 217,
+   "z": 1.18,
+   "ratio": 1.37,
+   "level": 0
+  }
+ ]
+}
